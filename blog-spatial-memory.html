@@ -10,9 +10,9 @@
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://physicalreasoning.ai/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="alternate" type="application/rss+xml" title="Rollouts" href="https://physicalreasoning.ai/feed.xml">
+<link rel="alternate" type="application/rss+xml" title="Blog" href="https://physicalreasoning.ai/feed.xml">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
-<title>Spatial memory at kilometer scale — Physical Reasoning</title>
+<title>Spatial memory at kilometer scale · Physical Reasoning</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -101,15 +101,15 @@
   <article>
     <div class="meta">May 2026 · Research notes</div>
     <h1>Spatial memory at kilometer scale</h1>
-    <p>Walk a generated city for thirty seconds, turn around, and the street behind you has been redrawn from scratch. Today's interactive world models have vivid imaginations and no memory.</p>
+    <p>Walk through a generated city for thirty seconds, turn around, and the street behind you has been redrawn from scratch. Current interactive world models do not remember what they generated.</p>
     <p>The root cause is architectural. Most video world models condition on a finite window of recent frames, so anything that leaves the window leaves the world. Attention over longer histories helps, but the cost grows with time rather than with space, which is the wrong axis: revisiting a place after an hour should be cheap if the place hasn't changed.</p>
     <p>Our approach keeps an explicit spatial state alongside the generative model: a coarse, queryable map that accumulates what the model has committed to. Generation is conditioned on the map patch around the current viewpoint, and each generated frame writes its commitments back. Memory cost scales with the area explored, not the duration of the session.</p>
     <figure>
       <canvas id="viz"></canvas>
-      <figcaption>fig. 1 — the spatial map accumulates commitments as the model explores</figcaption>
+      <figcaption>fig. 1: the spatial map fills in as the model explores</figcaption>
     </figure>
-    <p>At kilometer scale this changes what the models are useful for. Robot navigation policies can be trained on routes with genuine loop closure. Game worlds keep their promises. Counterfactual driving scenarios can return to the intersection where the decision actually mattered.</p>
-    <p>The open problem is dynamic content: the map wants the world to hold still, and the world declines. We discuss partial solutions, and their failure cases, in the full write-up.</p>
+    <p>At kilometer scale this changes what the models are useful for. Robot navigation policies can be trained on routes with real loop closure, game levels stay consistent between visits, and driving scenarios can return to the intersection where the decision actually mattered.</p>
+    <p>The open problem is dynamic content. Moving objects break the assumption that the map can treat the world as static. We cover partial fixes, and where they fail, in the full write-up.</p>
   </article>
 
   <footer>© 2026 Physical Reasoning</footer>

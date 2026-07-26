@@ -10,9 +10,9 @@
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://physicalreasoning.ai/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="alternate" type="application/rss+xml" title="Rollouts" href="https://physicalreasoning.ai/feed.xml">
+<link rel="alternate" type="application/rss+xml" title="Blog" href="https://physicalreasoning.ai/feed.xml">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
-<title>Latent actions from unlabeled video — Physical Reasoning</title>
+<title>Latent actions from unlabeled video · Physical Reasoning</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -106,10 +106,10 @@
     <p>What emerges is a control interface no one designed. On game footage, the codes align almost perfectly with the controller inputs the model never saw. On robot data, they recover arm primitives. On human video, they land on something like a coarse verb vocabulary: reach, grasp, place, pour.</p>
     <figure>
       <canvas id="viz"></canvas>
-      <figcaption>fig. 1 — latent action codes cluster into a discrete vocabulary no one designed</figcaption>
+      <figcaption>fig. 1: latent action codes cluster into a small discrete vocabulary</figcaption>
     </figure>
-    <p>The practical consequence is that a policy can be trained inside the world model using these invented actions, then grounded to a real robot's actuators with a small amount of labeled data. The expensive part — learning how the world responds to being acted upon — comes from free video.</p>
-    <p>We are releasing our training recipe and checkpoints. The most interesting failure modes involve wind, water, and other agents: things that act without being acted upon.</p>
+    <p>The practical consequence is that a policy can be trained inside the world model using these invented actions, then grounded to a real robot's actuators with a small amount of labeled data. The expensive part, learning how the world responds to being acted on, comes from ordinary video.</p>
+    <p>We are releasing our training recipe and checkpoints. The main failure modes involve wind, water, and other agents, which move on their own without being acted on.</p>
   </article>
 
   <footer>© 2026 Physical Reasoning</footer>

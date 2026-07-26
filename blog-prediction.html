@@ -10,9 +10,9 @@
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://physicalreasoning.ai/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="alternate" type="application/rss+xml" title="Rollouts" href="https://physicalreasoning.ai/feed.xml">
+<link rel="alternate" type="application/rss+xml" title="Blog" href="https://physicalreasoning.ai/feed.xml">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
-<title>Prediction is not understanding, until it is — Physical Reasoning</title>
+<title>Prediction is not understanding, until it is · Physical Reasoning</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -101,15 +101,15 @@
   <article>
     <div class="meta">July 2026 · Research notes</div>
     <h1>Prediction is not understanding, until it is</h1>
-    <p>A model that predicts the next frame perfectly might understand nothing at all. Or it might understand everything. The unsettling part is that the loss curve looks identical either way.</p>
+    <p>A model can predict the next frame almost perfectly and still not understand the scene. The loss curve looks the same either way, and that is the problem.</p>
     <p>When we train video world models, the objective is almost always some flavor of reconstruction: predict what the sensor will see next. The hope is that to get good at this, the model is forced to learn objects, permanence, contact, and cause. Sometimes that happens. Often the model finds a cheaper path, exploiting texture statistics and camera motion priors that generalize just well enough to keep the loss falling.</p>
     <p>The failure only becomes visible under intervention. Ask the model what happens if the cup at the edge of the table is nudged, and the texture-statistics model produces a plausible-looking video where the cup does something physically incoherent, because nothing in its training pressure ever required a concept of "cup" that persists when pushed.</p>
     <figure>
       <canvas id="viz"></canvas>
-      <figcaption>fig. 1 — two models, same loss surface: one settles into structure, one into texture</figcaption>
+      <figcaption>fig. 1: two models on the same loss surface, one settles into structure, one into texture</figcaption>
     </figure>
     <p>Our position is that the distinction is measurable, and should be measured directly. We evaluate world models not on held-out prediction error but on counterfactual consistency: does the model's imagined outcome of an intervention agree with reality when we actually perform it? On this metric, models with nearly identical validation loss separate by a wide margin.</p>
-    <p>Prediction becomes understanding at the point where it survives intervention. Until then, it's compression.</p>
+    <p>A model that holds up under intervention is one you can plan with. That is the bar we use.</p>
   </article>
 
   <footer>© 2026 Physical Reasoning</footer>

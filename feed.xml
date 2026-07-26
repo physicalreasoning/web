@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
-  <title>Rollouts — Physical Reasoning</title>
+  <title>Physical Reasoning Blog</title>
   <link>https://physicalreasoning.ai/blog.html</link>
   <description>Research notes from Physical Reasoning: world models, latent actions, and spatial intelligence.</description>
   <language>en</language>
