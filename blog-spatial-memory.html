@@ -106,54 +106,59 @@
 
   <footer>© 2026 Physical Reasoning</footer>
 </div>
-<script type="module">
-import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-const canvas = document.getElementById('viz');
-const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
-camera.position.set(0, 2.6, 4.6);
-camera.lookAt(0, 0, 0);
-const group = new THREE.Group();
-group.add(new THREE.LineSegments(
-  new THREE.WireframeGeometry(new THREE.PlaneGeometry(4.4, 4.4, 11, 11)),
-  new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.14 })
-).rotateX(-Math.PI / 2));
-const blocks = [];
-for (let gx = -5; gx <= 5; gx++) {
-  for (let gz = -5; gz <= 5; gz++) {
-    if (Math.random() < 0.42) continue;
-    const h = 0.15 + Math.random() * 0.7;
-    const box = new THREE.LineSegments(
-      new THREE.EdgesGeometry(new THREE.BoxGeometry(0.26, h, 0.26)),
-      new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 })
-    );
-    box.position.set(gx * 0.4, h / 2, gz * 0.4);
-    blocks.push(box);
-    group.add(box);
+<script>
+(function () {
+  var c = document.getElementById('viz'), x = c.getContext('2d');
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // isometric city blocks fading in as the map accumulates
+  var blocks = [];
+  for (var gx = -5; gx <= 5; gx++) for (var gz = -5; gz <= 5; gz++) {
+    if (Math.random() < 0.4) continue;
+    blocks.push([gx, gz, 12 + Math.random() * 42, blocks.length]);
   }
-}
-scene.add(group);
-function size() {
-  const w = canvas.clientWidth, h = canvas.clientHeight;
-  renderer.setSize(w, h, false);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
-}
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-function frame(t) {
-  group.rotation.y = t * 0.0001;
-  blocks.forEach((b, i) => {
-    b.material.opacity = Math.min(0.4, Math.max(0, (t - i * 60) * 0.0004));
-  });
-  renderer.render(scene, camera);
-  if (!reduced) requestAnimationFrame(frame);
-}
-addEventListener('resize', () => { size(); renderer.render(scene, camera); });
-size();
-if (reduced) { blocks.forEach(b => b.material.opacity = 0.4); renderer.render(scene, camera); }
-else requestAnimationFrame(frame);
+  function iso(gx, gz, w, h) {
+    return [w / 2 + (gx - gz) * 16, h * 0.52 + (gx + gz) * 8];
+  }
+  function box(px, py, hgt, a) {
+    x.strokeStyle = 'rgba(0,0,0,' + a * 0.4 + ')';
+    var s = 7;
+    x.beginPath();
+    // top diamond
+    x.moveTo(px, py - hgt);
+    x.lineTo(px + s, py - hgt + s / 2); x.lineTo(px, py - hgt + s);
+    x.lineTo(px - s, py - hgt + s / 2); x.closePath();
+    // verticals
+    x.moveTo(px - s, py - hgt + s / 2); x.lineTo(px - s, py + s / 2);
+    x.moveTo(px + s, py - hgt + s / 2); x.lineTo(px + s, py + s / 2);
+    x.moveTo(px, py - hgt + s); x.lineTo(px, py + s);
+    // base
+    x.moveTo(px - s, py + s / 2); x.lineTo(px, py + s); x.lineTo(px + s, py + s / 2);
+    x.stroke();
+  }
+  function draw(t) {
+    var w = c.clientWidth, h = c.clientHeight, d = Math.min(devicePixelRatio, 2);
+    c.width = w * d; c.height = h * d; x.setTransform(d, 0, 0, d, 0, 0);
+    x.clearRect(0, 0, w, h);
+    // ground grid
+    x.strokeStyle = 'rgba(0,0,0,0.10)';
+    for (var g = -6; g <= 6; g++) {
+      var a = iso(g, -6, w, h), b = iso(g, 6, w, h);
+      x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(b[0], b[1]); x.stroke();
+      a = iso(-6, g, w, h); b = iso(6, g, w, h);
+      x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(b[0], b[1]); x.stroke();
+    }
+    for (var i = 0; i < blocks.length; i++) {
+      var bl = blocks[i];
+      var alpha = reduced ? 1 : Math.max(0, Math.min(1, (t - bl[3] * 55) * 0.0007));
+      if (alpha <= 0) continue;
+      var p = iso(bl[0], bl[1], w, h);
+      box(p[0], p[1], bl[2], alpha);
+    }
+  }
+  draw(reduced ? 1 : 0);
+  if (!reduced) (function loop(t) { draw(t); requestAnimationFrame(loop); })(0);
+  addEventListener('resize', function () { draw(reduced ? 1 : 99999); });
+})();
 </script>
 </body>
 </html>
