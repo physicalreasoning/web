@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prediction is not understanding, until it is — World Reasoning</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --paper: #FFFFFF;
+    --ink: #000000;
+    --muted: #6B6B6B;
+    --rule: #E8E8E8;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  body {
+    font-family: var(--serif);
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.7;
+    font-size: 17px;
+  }
+  .wrap { max-width: 38rem; margin: 0 auto; padding: 0 1.25rem; }
+  nav {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 1.8rem 0;
+  }
+  .wordmark {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .back {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .back:hover { color: var(--ink); }
+  article { padding: 3rem 0 4rem; }
+  @media (max-width: 560px) { article { padding: 2rem 0 3rem; } }
+  .meta {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  article h1 {
+    font-size: clamp(1.45rem, 5vw, 1.9rem);
+    font-weight: 400;
+    line-height: 1.35;
+    text-wrap: balance;
+    margin-bottom: 1.8rem;
+  }
+  article p { margin-bottom: 1.2rem; }
+  article p:first-of-type { font-size: 1.08rem; color: var(--muted); }
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0 3rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="wordmark" href="index.html">[WR]</a>
+    <a class="back" href="blog.html">&larr; Blog</a>
+  </nav>
+
+  <article>
+    <div class="meta">July 2026 · Research notes</div>
+    <h1>Prediction is not understanding, until it is</h1>
+    <p>A model that predicts the next frame perfectly might understand nothing at all. Or it might understand everything. The unsettling part is that the loss curve looks identical either way.</p>
+    <p>When we train video world models, the objective is almost always some flavor of reconstruction: predict what the sensor will see next. The hope is that to get good at this, the model is forced to learn objects, permanence, contact, and cause. Sometimes that happens. Often the model finds a cheaper path, exploiting texture statistics and camera motion priors that generalize just well enough to keep the loss falling.</p>
+    <p>The failure only becomes visible under intervention. Ask the model what happens if the cup at the edge of the table is nudged, and the texture-statistics model produces a plausible-looking video where the cup does something physically incoherent, because nothing in its training pressure ever required a concept of "cup" that persists when pushed.</p>
+    <p>Our position is that the distinction is measurable, and should be measured directly. We evaluate world models not on held-out prediction error but on counterfactual consistency: does the model's imagined outcome of an intervention agree with reality when we actually perform it? On this metric, models with nearly identical validation loss separate by a wide margin.</p>
+    <p>Prediction becomes understanding at the point where it survives intervention. Until then, it's compression.</p>
+  </article>
+
+  <footer>© 2026 World Reasoning</footer>
+</div>
+</body>
+</html>
