@@ -3,6 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="An independent research collective exploring the frontier of spatial intelligence — world models that internalize physical dynamics, objects, agents, and cause.">
+<meta property="og:title" content="Physical Reasoning">
+<meta property="og:description" content="An independent research collective exploring the frontier of spatial intelligence — world models that internalize physical dynamics, objects, agents, and cause.">
+<meta property="og:url" content="https://physicalreasoning.ai/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://physicalreasoning.ai/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="application/rss+xml" title="Rollouts" href="https://physicalreasoning.ai/feed.xml">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 <title>Physical Reasoning</title>
 <style>
@@ -73,6 +81,23 @@
   }
   .research-link:hover { color: var(--muted); border-color: var(--muted); }
   .research-link:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+  .sim { margin: 0 0 3.5rem; }
+  .sim canvas {
+    width: 100%;
+    height: 220px;
+    display: block;
+    border: 1px solid var(--rule);
+    cursor: crosshair;
+  }
+  .sim figcaption {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-top: 0.6rem;
+  }
+  .sim .live { color: var(--ink); }
 
   .partners {
     border-top: 1px solid var(--rule);
@@ -149,8 +174,13 @@
   <header class="hero">
     <h1>Most of reality is never written down. We align models that learn the world by imagining what happens next.</h1>
     <p>Physical Reasoning is an independent research collective exploring the frontier of spatial intelligence: world models that internalize physical dynamics, objects, agents, and cause, so machines can simulate consequences before they act.</p>
-    <a class="research-link" href="blog.html">Read our blog &rarr;</a>
+    <a class="research-link" href="blog.html">Rollouts, our research notes &rarr;</a>
   </header>
+
+  <figure class="sim">
+    <canvas id="rollout"></canvas>
+    <figcaption><span class="live">&#9679;</span> live &mdash; left is the world, right is the model's guess eight steps ahead. move your cursor over the left half to intervene.</figcaption>
+  </figure>
 
   <section class="partners">
     <h2>Founded by technical leaders and researchers at</h2>
@@ -168,5 +198,73 @@
 
   <footer>© 2026 Physical Reasoning</footer>
 </div>
+<script>
+(function () {
+  var c = document.getElementById('rollout'), x = c.getContext('2d');
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var N = 12, parts = [], mouse = null;
+  for (var i = 0; i < N; i++) {
+    parts.push({ x: Math.random(), y: Math.random(),
+                 vx: (Math.random() - 0.5) * 0.006, vy: (Math.random() - 0.5) * 0.006 });
+  }
+  function step(ps) {
+    for (var i = 0; i < ps.length; i++) {
+      var p = ps[i];
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > 1) { p.vx *= -1; p.x = Math.max(0, Math.min(1, p.x)); }
+      if (p.y < 0 || p.y > 1) { p.vy *= -1; p.y = Math.max(0, Math.min(1, p.y)); }
+    }
+  }
+  c.addEventListener('mousemove', function (e) {
+    var r = c.getBoundingClientRect();
+    var mx = (e.clientX - r.left) / (r.width / 2), my = (e.clientY - r.top) / r.height;
+    if (mx <= 1) mouse = { x: mx, y: my }; else mouse = null;
+  });
+  c.addEventListener('mouseleave', function () { mouse = null; });
+  function nudge(ps) {
+    if (!mouse) return;
+    for (var i = 0; i < ps.length; i++) {
+      var p = ps[i], dx = p.x - mouse.x, dy = p.y - mouse.y;
+      var d2 = dx * dx + dy * dy;
+      if (d2 < 0.04 && d2 > 0.0001) {
+        var f = 0.00035 / d2;
+        p.vx += dx * f; p.vy += dy * f;
+        var s = Math.hypot(p.vx, p.vy);
+        if (s > 0.012) { p.vx *= 0.012 / s; p.vy *= 0.012 / s; }
+      }
+    }
+  }
+  function draw() {
+    var w = c.clientWidth, h = c.clientHeight, d = Math.min(devicePixelRatio, 2);
+    c.width = w * d; c.height = h * d; x.setTransform(d, 0, 0, d, 0, 0);
+    x.clearRect(0, 0, w, h);
+    var half = w / 2;
+    x.strokeStyle = 'rgba(0,0,0,0.25)';
+    x.setLineDash([2, 5]);
+    x.beginPath(); x.moveTo(half, 0); x.lineTo(half, h); x.stroke();
+    x.setLineDash([]);
+    x.fillStyle = 'rgba(0,0,0,0.85)';
+    for (var i = 0; i < parts.length; i++) {
+      x.beginPath();
+      x.arc(parts[i].x * half, parts[i].y * h, 2.5, 0, 7);
+      x.fill();
+    }
+    var ghost = parts.map(function (p) { return { x: p.x, y: p.y, vx: p.vx, vy: p.vy }; });
+    for (var s = 1; s <= 8; s++) {
+      for (var k = 0; k < 6; k++) step(ghost);
+      x.fillStyle = 'rgba(0,0,0,' + (0.06 + 0.05 * s) + ')';
+      for (var i = 0; i < ghost.length; i++) {
+        x.beginPath();
+        x.arc(half + ghost[i].x * half, ghost[i].y * h, s === 8 ? 2.5 : 1.3, 0, 7);
+        x.fill();
+      }
+    }
+  }
+  function loop() { nudge(parts); step(parts); draw(); requestAnimationFrame(loop); }
+  draw();
+  if (!reduced) requestAnimationFrame(loop);
+  addEventListener('resize', draw);
+})();
+</script>
 </body>
 </html>
