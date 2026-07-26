@@ -12,6 +12,10 @@
 <meta property="og:image" content="https://physicalreasoning.ai/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="alternate" type="application/rss+xml" title="Blog" href="https://physicalreasoning.ai/feed.xml">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}]});"></script>
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 <title>Prediction is not understanding, until it is · Physical Reasoning</title>
 <style>
@@ -74,6 +78,7 @@
   }
   article p { margin-bottom: 1.2rem; }
   article p:first-of-type { font-size: 1.08rem; color: var(--muted); }
+  .eq { margin: 1.6rem 0; overflow-x: auto; font-size: 0.95rem; }
   figure { margin: 2.4rem 0; }
   figure canvas { width: 100%; height: 260px; display: block; }
   figcaption {
@@ -110,7 +115,9 @@
       <canvas id="viz"></canvas>
       <figcaption>fig. 1: two models on the same loss surface, one settles into structure, one into texture</figcaption>
     </figure>
-    <p>Our position is that the distinction is measurable, and should be measured directly. We evaluate world models not on held-out prediction error but on counterfactual consistency: does the model's imagined outcome of an intervention agree with reality when we actually perform it? On this metric, models with nearly identical validation loss separate by a wide margin.</p>
+    <p>Our position is that the distinction is measurable, and should be measured directly. We evaluate world models not on held-out prediction error but on counterfactual consistency: does the model's imagined outcome of an intervention agree with reality when we actually perform it? On this metric, models with nearly identical validation loss separate by a wide margin. The two quantities are not the same thing:</p>
+    <div class="eq">$$ \mathcal{L}_{\text{pred}} = \mathbb{E}\,\big\lVert \hat{x}_{t+1} - x_{t+1} \big\rVert^2, \qquad \mathcal{C} = \mathbb{E}_{s,a}\; d\big(M(s,\, \mathrm{do}(a)),\; s'_{\text{real}}\big) $$</div>
+    <p>Training optimizes \(\mathcal{L}_{\text{pred}}\). We report \(\mathcal{C}\), the gap between what the model imagines under an intervention \(\mathrm{do}(a)\) and what actually happens when we perform it.</p>
     <p>A model that holds up under intervention is one you can plan with. That is the bar we use.</p>
   </article>
 

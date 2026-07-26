@@ -12,6 +12,10 @@
 <meta property="og:image" content="https://physicalreasoning.ai/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="alternate" type="application/rss+xml" title="Blog" href="https://physicalreasoning.ai/feed.xml">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}]});"></script>
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 <title>Latent actions from unlabeled video · Physical Reasoning</title>
 <style>
@@ -74,6 +78,7 @@
   }
   article p { margin-bottom: 1.2rem; }
   article p:first-of-type { font-size: 1.08rem; color: var(--muted); }
+  .eq { margin: 1.6rem 0; overflow-x: auto; font-size: 0.95rem; }
   figure { margin: 2.4rem 0; }
   figure canvas { width: 100%; height: 260px; display: block; }
   figcaption {
@@ -104,7 +109,10 @@
     <div class="meta">June 2026 · Research notes</div>
     <h1>Latent actions from unlabeled video</h1>
     <p>The internet is full of video of things being done, and almost none of it comes with action labels. If world models are going to learn from observation at scale, they have to invent the controls themselves.</p>
-    <p>The idea behind latent actions is simple: between any two consecutive frames, something happened. A hand moved, a wheel turned, a door swung. We train an encoder to compress that "something" into a small discrete code, jointly with a world model that must use the code to predict the second frame from the first. If the code is too small to smuggle pixels through, the only way to lower the loss is for it to represent the action itself.</p>
+    <p>The idea behind latent actions is simple: between any two consecutive frames, something happened. A hand moved, a wheel turned, a door swung. We train an encoder to compress that "something" into a small discrete code, jointly with a world model that must use the code to predict the second frame from the first. If the code is too small to smuggle pixels through, the only way to lower the loss is for it to represent the action itself. The whole method fits in two lines:</p>
+    <div class="eq">$$ z_t = q\big(E(x_t,\, x_{t+1})\big), \qquad \hat{x}_{t+1} = G(x_t,\, z_t) $$
+    $$ \mathcal{L} = \mathbb{E}\,\big\lVert \hat{x}_{t+1} - x_{t+1} \big\rVert^2, \qquad |\mathcal{Z}| = 16 $$</div>
+    <p>The quantizer \(q\) maps each transition onto one of sixteen codes, and the decoder \(G\) must reconstruct the next frame from the current frame and that code alone. Sixteen slots is the bottleneck doing all the work.</p>
     <figure>
       <canvas id="mech"></canvas>
       <figcaption>fig. 1: two consecutive frames are compressed into one active cell of a 16 slot codebook. the code changes when the motion changes.</figcaption>

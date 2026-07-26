@@ -12,6 +12,10 @@
 <meta property="og:image" content="https://physicalreasoning.ai/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="alternate" type="application/rss+xml" title="Blog" href="https://physicalreasoning.ai/feed.xml">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}]});"></script>
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 <title>Spatial memory at kilometer scale · Physical Reasoning</title>
 <style>
@@ -74,6 +78,7 @@
   }
   article p { margin-bottom: 1.2rem; }
   article p:first-of-type { font-size: 1.08rem; color: var(--muted); }
+  .eq { margin: 1.6rem 0; overflow-x: auto; font-size: 0.95rem; }
   figure { margin: 2.4rem 0; }
   figure canvas { width: 100%; height: 260px; display: block; }
   figcaption {
@@ -106,6 +111,9 @@
     <p>Walk through a generated city for thirty seconds, turn around, and the street behind you has been redrawn from scratch. Current interactive world models do not remember what they generated.</p>
     <p>The root cause is architectural. Most video world models condition on a finite window of recent frames, so anything that leaves the window leaves the world. Attention over longer histories helps, but the cost grows with time rather than with space, which is the wrong axis: revisiting a place after an hour should be cheap if the place hasn't changed.</p>
     <p>Our approach keeps an explicit spatial state alongside the generative model: a coarse, queryable map that accumulates what the model has committed to. Generation is conditioned on the map patch around the current viewpoint, and each generated frame writes its commitments back. Memory cost scales with the area explored, not the duration of the session.</p>
+    <div class="eq">$$ m_{t+1} = m_t \oplus \mathrm{write}(x_t,\, p_t), \qquad \hat{x}_{t+1} \sim G\big(\,\cdot \mid x_t,\, \mathrm{read}(m_t,\, p_t)\big) $$
+    $$ \mathrm{cost}_{\text{attention}} = O(T), \qquad \mathrm{cost}_{\text{map}} = O(A_{\text{explored}}) $$</div>
+    <p>Each frame writes its commitments into the map \(m\) at the current pose \(p\), and generation reads back only the patch around the viewpoint. Time \(T\) can grow without bound while the map stays the size of the world.</p>
     <figure>
       <canvas id="viz"></canvas>
       <figcaption>fig. 1: the spatial map fills in as the model explores</figcaption>
