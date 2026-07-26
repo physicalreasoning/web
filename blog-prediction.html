@@ -64,6 +64,15 @@
   }
   article p { margin-bottom: 1.2rem; }
   article p:first-of-type { font-size: 1.08rem; color: var(--muted); }
+  figure { margin: 2.4rem 0; }
+  figure canvas { width: 100%; height: 260px; display: block; }
+  figcaption {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-top: 0.6rem;
+  }
   footer {
     border-top: 1px solid var(--rule);
     padding: 2rem 0 3rem;
@@ -87,11 +96,51 @@
     <p>A model that predicts the next frame perfectly might understand nothing at all. Or it might understand everything. The unsettling part is that the loss curve looks identical either way.</p>
     <p>When we train video world models, the objective is almost always some flavor of reconstruction: predict what the sensor will see next. The hope is that to get good at this, the model is forced to learn objects, permanence, contact, and cause. Sometimes that happens. Often the model finds a cheaper path, exploiting texture statistics and camera motion priors that generalize just well enough to keep the loss falling.</p>
     <p>The failure only becomes visible under intervention. Ask the model what happens if the cup at the edge of the table is nudged, and the texture-statistics model produces a plausible-looking video where the cup does something physically incoherent, because nothing in its training pressure ever required a concept of "cup" that persists when pushed.</p>
+    <figure>
+      <canvas id="viz"></canvas>
+      <figcaption>fig. 1 — two models, same loss surface: one settles into structure, one into texture</figcaption>
+    </figure>
     <p>Our position is that the distinction is measurable, and should be measured directly. We evaluate world models not on held-out prediction error but on counterfactual consistency: does the model's imagined outcome of an intervention agree with reality when we actually perform it? On this metric, models with nearly identical validation loss separate by a wide margin.</p>
     <p>Prediction becomes understanding at the point where it survives intervention. Until then, it's compression.</p>
   </article>
 
   <footer>© 2026 Physical Reasoning</footer>
 </div>
+<script type="module">
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+const canvas = document.getElementById('viz');
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+camera.position.set(0, 2.2, 4.2);
+camera.lookAt(0, -0.2, 0);
+const geo = new THREE.PlaneGeometry(4, 4, 48, 48);
+const pos = geo.attributes.position;
+for (let i = 0; i < pos.count; i++) {
+  const x = pos.getX(i), y = pos.getY(i);
+  const r = Math.sqrt(x * x + y * y);
+  pos.setZ(i, Math.exp(-r * 0.9) * Math.cos(r * 3.2) * 0.55);
+}
+geo.computeVertexNormals();
+const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true, transparent: true, opacity: 0.28 }));
+mesh.rotation.x = -Math.PI / 2;
+scene.add(mesh);
+function size() {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  renderer.setSize(w, h, false);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function frame(t) {
+  mesh.rotation.z = t * 0.00012;
+  renderer.render(scene, camera);
+  if (!reduced) requestAnimationFrame(frame);
+}
+addEventListener('resize', () => { size(); renderer.render(scene, camera); });
+size();
+requestAnimationFrame(frame);
+</script>
 </body>
 </html>
