@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light only">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Resolved future events are the only contamination-proof benchmark, and prediction markets attach a price to every mistake.">
+<meta property="og:title" content="Evals with teeth">
+<meta property="og:description" content="Resolved future events are the only contamination-proof benchmark, and prediction markets attach a price to every mistake.">
+<meta property="og:url" content="https://physicalreasoning.ai/blog/evals-with-teeth/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://physicalreasoning.ai/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="application/rss+xml" title="Blog" href="https://physicalreasoning.ai/feed.xml">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}]});"></script>
+<link rel="canonical" href="https://physicalreasoning.ai/blog/evals-with-teeth/">
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<title>Evals with teeth · Physical Reasoning</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    color-scheme: light only;
+    --paper: #FFFFFF;
+    --ink: #000000;
+    --muted: #6B6B6B;
+    --rule: #E8E8E8;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  body {
+    font-family: var(--serif);
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.7;
+    font-size: 17px;
+  }
+  .wrap { max-width: 38rem; margin: 0 auto; padding: 0 1.25rem; }
+  nav {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 1.8rem 0;
+  }
+  .wordmark {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .back {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .back:hover { color: var(--ink); }
+  article { padding: 3rem 0 4rem; }
+  @media (max-width: 560px) { article { padding: 2rem 0 3rem; } }
+  .meta {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  article h1 {
+    font-size: clamp(1.45rem, 5vw, 1.9rem);
+    font-weight: 400;
+    line-height: 1.35;
+    text-wrap: balance;
+    margin-bottom: 1.8rem;
+  }
+  article p { margin-bottom: 1.2rem; }
+  article p:first-of-type { font-size: 1.08rem; color: var(--muted); }
+  article a { color: var(--ink); }
+  article a:hover { color: var(--muted); }
+  .eq { margin: 1.6rem 0; overflow-x: auto; font-size: 0.95rem; }
+  figure { margin: 2.4rem 0; }
+  figure canvas { width: 100%; height: 260px; display: block; }
+  figcaption {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-top: 0.6rem;
+  }
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0 3rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+</style>
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Evals with teeth", "description": "Resolved future events are the only contamination-proof benchmark, and prediction markets attach a price to every mistake.", "url": "https://physicalreasoning.ai/blog/evals-with-teeth/", "datePublished": "2026-07-25", "author": {"@type": "Organization", "name": "Physical Reasoning"}, "publisher": {"@type": "Organization", "name": "Physical Reasoning", "logo": {"@type": "ImageObject", "url": "https://physicalreasoning.ai/og.png"}}, "mainEntityOfPage": "https://physicalreasoning.ai/blog/evals-with-teeth/", "image": "https://physicalreasoning.ai/og.png"}]</script>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="wordmark" href="/">[Pr]</a>
+    <a class="back" href="/blog/">&larr; Blog</a>
+  </nav>
+
+  <article>
+    <div class="meta">July 2026 · Research notes</div>
+    <h1>Evals with teeth</h1>
+    <p>Every benchmark leaks into training data eventually. Events that have not happened yet cannot. A prediction market takes that free lunch and adds a second ingredient no benchmark has: a price on every mistake.</p>
+    <p>The standard way to evaluate a forecasting model is a score against resolved questions. This is already better than most of machine learning evaluation, because a question that resolves after the model's training cutoff is contamination proof by construction. Benchmarks like <a href="https://faculty.wharton.upenn.edu/wp-content/uploads/2026/02/ForecastBench_A_Dynamic_.pdf">ForecastBench</a> refresh their question pool daily for exactly this reason. But a score against resolved questions still misses something. It tells you whether the model is right. It does not tell you whether the model knows anything the rest of the world does not.</p>
+    <p>A market price answers that second question. The price on a liquid prediction market is the aggregated belief of everyone willing to stake money on the outcome, and in 2026 that is a serious crowd: the largest venue cleared ten billion dollars in monthly volume this spring. To profit, it is not enough to be right. You have to be right where the crowd is wrong, at the moment the price still disagrees with you, in a market deep enough to fill your order. Profit is calibration measured against the hardest available baseline.</p>
+    <div class="eq">$$ \mathbb{E}[\text{profit}] = \hat{p}\,(1 - \pi) - (1 - \hat{p})\,\pi $$</div>
+    <p>A binary share that pays one dollar costs the market price \(\pi\). If your model believes the true probability is \(\hat{p}\), the trade has positive expected value only when \(\hat{p} > \pi\), and the size of the edge is exactly the disagreement. A model that always agrees with the market earns nothing, no matter how accurate both of them are.</p>
+    <figure>
+      <canvas id="cal"></canvas>
+      <figcaption>fig. 1: reliability diagram accumulating as questions resolve. a calibrated model converges to the diagonal, an overconfident one bows away from it.</figcaption>
+    </figure>
+    <p>The early evidence on language models is humbling in an instructive way. In <a href="https://arxiv.org/html/2604.07355v1">Prediction Arena</a>, six frontier models traded real money on live prediction markets for two months, and on one of the two major venues every single one of them lost, with returns between minus sixteen and minus thirty one percent. The failure modes were not forecasting failures. They were trading failures: holding losers to settlement while cutting winners early, oversized positions in unfamiliar categories, and in one case six hundred trades at twenty nine percent accuracy. The amount of research a model did had zero correlation with its returns. The quality of synthesis did.</p>
+    <p>Meanwhile a <a href="https://openreview.net/forum?id=TSA5kRUKZv">separate line of work</a> found a forecaster whose accuracy was statistically indistinguishable from the market and which still earned higher realized returns, entirely by losing less when it was wrong. And <a href="https://thinkingmachines.ai/news/training-llms-to-predict-world-events/">recent training work</a> shows the skill is learnable: reinforcement learning with a proper scoring rule as the reward moved an open model from well below to level with frontier forecasters.</p>
+    <p>This is why we care. A world model, in our sense, is a system that simulates how things unfold before they do. Markets are the one evaluation where that ability is scored continuously, adversarially, and in dollars, by a counterparty who wants you to be wrong. We intend to use them as exactly that: not a casino, but the scoreboard.</p>
+  </article>
+
+  <footer>© 2026 Physical Reasoning</footer>
+</div>
+<script>
+(function () {
+  var c = document.getElementById('cal'), x = c.getContext('2d');
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var BINS = 10, resolved = 0, MAX = 400;
+  var sums = [], hits = [];
+  for (var i = 0; i < BINS; i++) { sums.push(0); hits.push(0); }
+  function observe(k) {
+    for (var s = 0; s < k; s++) {
+      // calibrated model: predicted p, outcome ~ Bernoulli(p)
+      var p = Math.random();
+      var b = Math.min(BINS - 1, Math.floor(p * BINS));
+      sums[b]++;
+      if (Math.random() < p) hits[b]++;
+      resolved++;
+    }
+  }
+  function draw() {
+    var w = c.clientWidth, h = c.clientHeight, d = Math.min(devicePixelRatio, 2);
+    c.width = w * d; c.height = h * d; x.setTransform(d, 0, 0, d, 0, 0);
+    x.clearRect(0, 0, w, h);
+    var m = 44, pw = w - m - 16, ph = h - m - 30;
+    var ox = m, oy = 12;
+    x.font = '10px ui-monospace, Menlo, monospace';
+    // axes
+    x.strokeStyle = 'rgba(0,0,0,0.35)';
+    x.beginPath(); x.moveTo(ox, oy); x.lineTo(ox, oy + ph); x.lineTo(ox + pw, oy + ph); x.stroke();
+    x.fillStyle = 'rgba(0,0,0,0.45)';
+    x.fillText('predicted probability', ox + pw / 2 - 52, oy + ph + 26);
+    x.save(); x.translate(12, oy + ph / 2 + 40); x.rotate(-Math.PI / 2);
+    x.fillText('realized frequency', 0, 0); x.restore();
+    x.fillText('0', ox - 4, oy + ph + 14); x.fillText('1', ox + pw - 4, oy + ph + 14);
+    x.fillText('1', ox - 14, oy + 6);
+    // diagonal
+    x.strokeStyle = 'rgba(0,0,0,0.2)';
+    x.setLineDash([3, 4]);
+    x.beginPath(); x.moveTo(ox, oy + ph); x.lineTo(ox + pw, oy); x.stroke();
+    x.setLineDash([]);
+    // calibrated model dots
+    for (var i = 0; i < BINS; i++) {
+      if (!sums[i]) continue;
+      var px = ox + ((i + 0.5) / BINS) * pw;
+      var py = oy + ph - (hits[i] / sums[i]) * ph;
+      var r2 = 2 + Math.min(4, sums[i] / 14);
+      x.fillStyle = 'rgba(0,0,0,0.8)';
+      x.beginPath(); x.arc(px, py, r2, 0, 7); x.fill();
+    }
+    // overconfident reference curve: freq = 0.5 + (p-0.5)*0.55
+    x.strokeStyle = 'rgba(0,0,0,0.3)';
+    x.beginPath();
+    for (var t = 0; t <= 1.001; t += 0.05) {
+      var fy = 0.5 + (t - 0.5) * 0.55;
+      var px2 = ox + t * pw, py2 = oy + ph - fy * ph;
+      t === 0 ? x.moveTo(px2, py2) : x.lineTo(px2, py2);
+    }
+    x.stroke();
+    x.fillStyle = 'rgba(0,0,0,0.45)';
+    x.fillText('overconfident', ox + pw - 84, oy + ph * 0.30);
+    x.fillText(resolved + ' resolved', ox + 8, oy + 14);
+  }
+  if (reduced) { observe(MAX); draw(); }
+  else {
+    var restAt = null;
+    setInterval(function () {
+      if (resolved < MAX) { observe(2); draw(); }
+      else if (restAt === null) restAt = Date.now() + 3000;
+      else if (Date.now() > restAt) {
+        for (var i = 0; i < BINS; i++) { sums[i] = 0; hits[i] = 0; }
+        resolved = 0; restAt = null;
+      }
+    }, 60);
+    draw();
+  }
+  addEventListener('resize', draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light only">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Recovering an agent's control space from observation alone, with no teleoperation and no action logs.">
+<meta property="og:title" content="Latent actions from unlabeled video">
+<meta property="og:description" content="Recovering an agent's control space from observation alone, with no teleoperation and no action logs.">
+<meta property="og:url" content="https://physicalreasoning.ai/blog/latent-actions/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://physicalreasoning.ai/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="application/rss+xml" title="Blog" href="https://physicalreasoning.ai/feed.xml">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}]});"></script>
+<link rel="canonical" href="https://physicalreasoning.ai/blog/latent-actions/">
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<title>Latent actions from unlabeled video · Physical Reasoning</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    color-scheme: light only;
+    --paper: #FFFFFF;
+    --ink: #000000;
+    --muted: #6B6B6B;
+    --rule: #E8E8E8;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  body {
+    font-family: var(--serif);
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.7;
+    font-size: 17px;
+  }
+  .wrap { max-width: 38rem; margin: 0 auto; padding: 0 1.25rem; }
+  nav {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 1.8rem 0;
+  }
+  .wordmark {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .back {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .back:hover { color: var(--ink); }
+  article { padding: 3rem 0 4rem; }
+  @media (max-width: 560px) { article { padding: 2rem 0 3rem; } }
+  .meta {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  article h1 {
+    font-size: clamp(1.45rem, 5vw, 1.9rem);
+    font-weight: 400;
+    line-height: 1.35;
+    text-wrap: balance;
+    margin-bottom: 1.8rem;
+  }
+  article p { margin-bottom: 1.2rem; }
+  article p:first-of-type { font-size: 1.08rem; color: var(--muted); }
+  .eq { margin: 1.6rem 0; overflow-x: auto; font-size: 0.95rem; }
+  figure { margin: 2.4rem 0; }
+  figure canvas { width: 100%; height: 260px; display: block; }
+  figcaption {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-top: 0.6rem;
+  }
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0 3rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+</style>
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Latent actions from unlabeled video", "description": "Recovering an agent's control space from observation alone, with no teleoperation and no action logs.", "url": "https://physicalreasoning.ai/blog/latent-actions/", "datePublished": "2026-06-10", "author": {"@type": "Organization", "name": "Physical Reasoning"}, "publisher": {"@type": "Organization", "name": "Physical Reasoning", "logo": {"@type": "ImageObject", "url": "https://physicalreasoning.ai/og.png"}}, "mainEntityOfPage": "https://physicalreasoning.ai/blog/latent-actions/", "image": "https://physicalreasoning.ai/og.png"}]</script>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="wordmark" href="/">[Pr]</a>
+    <a class="back" href="/blog/">&larr; Blog</a>
+  </nav>
+
+  <article>
+    <div class="meta">June 2026 · Research notes</div>
+    <h1>Latent actions from unlabeled video</h1>
+    <p>The internet is full of video of things being done, and almost none of it comes with action labels. If world models are going to learn from observation at scale, they have to invent the controls themselves.</p>
+    <p>The idea behind latent actions is simple: between any two consecutive frames, something happened. A hand moved, a wheel turned, a door swung. We train an encoder to compress that "something" into a small discrete code, jointly with a world model that must use the code to predict the second frame from the first. If the code is too small to smuggle pixels through, the only way to lower the loss is for it to represent the action itself. The whole method fits in two lines:</p>
+    <div class="eq">$$ z_t = q\big(E(x_t,\, x_{t+1})\big), \qquad \hat{x}_{t+1} = G(x_t,\, z_t) $$
+    $$ \mathcal{L} = \mathbb{E}\,\big\lVert \hat{x}_{t+1} - x_{t+1} \big\rVert^2, \qquad |\mathcal{Z}| = 16 $$</div>
+    <p>The quantizer \(q\) maps each transition onto one of sixteen codes, and the decoder \(G\) must reconstruct the next frame from the current frame and that code alone. Sixteen slots is the bottleneck doing all the work.</p>
+    <figure>
+      <canvas id="mech"></canvas>
+      <figcaption>fig. 1: two consecutive frames are compressed into one active cell of a 16 slot codebook. the code changes when the motion changes.</figcaption>
+    </figure>
+    <p>What emerges is a control interface no one designed. On game footage, the codes align almost perfectly with the controller inputs the model never saw. On robot data, they recover arm primitives. On human video, they land on something like a coarse verb vocabulary: reach, grasp, place, pour.</p>
+    <figure>
+      <canvas id="align"></canvas>
+      <figcaption>fig. 2: co-occurrence of latent codes and real controller inputs, accumulating as frames are observed. the diagonal is the alignment.</figcaption>
+    </figure>
+    <p>The practical consequence is that a policy can be trained inside the world model using these invented actions, then grounded to a real robot's actuators with a small amount of labeled data. The expensive part, learning how the world responds to being acted on, comes from ordinary video.</p>
+    <p>We are releasing our training recipe and checkpoints. The main failure modes involve wind, water, and other agents, which move on their own without being acted on.</p>
+  </article>
+
+  <footer>© 2026 Physical Reasoning</footer>
+</div>
+<script>
+var REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// fig 1: frame pair to codebook
+(function () {
+  var c = document.getElementById('mech'), x = c.getContext('2d');
+  var phase = 0;
+  var motions = [[0.06, 0], [0, 0.06], [-0.06, 0], [0.04, -0.04]];
+  var codeFor = [2, 7, 11, 13];
+  var obj = { x: 0.35, y: 0.5 };
+  function draw() {
+    var w = c.clientWidth, h = c.clientHeight, d = Math.min(devicePixelRatio, 2);
+    c.width = w * d; c.height = h * d; x.setTransform(d, 0, 0, d, 0, 0);
+    x.clearRect(0, 0, w, h);
+    var fw = Math.min(w * 0.26, 150), fh = fw * 0.75, fy = h * 0.5 - fh / 2 - 14;
+    var f1x = w * 0.06, f2x = f1x + fw + 18;
+    x.font = '10px ui-monospace, Menlo, monospace';
+    [f1x, f2x].forEach(function (fx, k) {
+      x.strokeStyle = 'rgba(0,0,0,0.5)';
+      x.strokeRect(fx, fy, fw, fh);
+      x.fillStyle = 'rgba(0,0,0,0.45)';
+      x.fillText(k ? 'frame t+1' : 'frame t', fx, fy + fh + 16);
+      var m = motions[phase];
+      var px = obj.x + (k ? m[0] : 0), py = obj.y + (k ? m[1] : 0);
+      x.fillStyle = '#000';
+      x.beginPath(); x.arc(fx + px * fw, fy + py * fh, 4, 0, 7); x.fill();
+      if (k) {
+        x.strokeStyle = 'rgba(0,0,0,0.4)';
+        x.beginPath();
+        x.moveTo(fx + obj.x * fw, fy + obj.y * fh);
+        x.lineTo(fx + px * fw, fy + py * fh);
+        x.stroke();
+      }
+    });
+    var ax = f2x + fw + 14, ay = fy + fh / 2;
+    x.strokeStyle = 'rgba(0,0,0,0.6)';
+    x.beginPath(); x.moveTo(ax, ay); x.lineTo(ax + 26, ay); x.stroke();
+    x.beginPath(); x.moveTo(ax + 26, ay); x.lineTo(ax + 20, ay - 4); x.moveTo(ax + 26, ay); x.lineTo(ax + 20, ay + 4); x.stroke();
+    var cbx = ax + 40, cell = Math.min(18, fh / 8);
+    for (var i = 0; i < 16; i++) {
+      var col = Math.floor(i / 8), row = i % 8;
+      var cx0 = cbx + col * (cell + 4), cy0 = fy + row * (cell + 2) - 6;
+      x.fillStyle = i === codeFor[phase] ? '#000' : 'rgba(0,0,0,0.07)';
+      x.fillRect(cx0, cy0, cell, cell);
+    }
+    x.fillStyle = 'rgba(0,0,0,0.45)';
+    x.fillText('codebook', cbx, fy + fh + 16);
+    x.fillText('a' + codeFor[phase], cbx, fy - 12);
+  }
+  draw();
+  if (!REDUCED) setInterval(function () {
+    phase = (phase + 1) % motions.length;
+    obj.x = 0.25 + Math.random() * 0.4; obj.y = 0.3 + Math.random() * 0.4;
+    draw();
+  }, 1400);
+  addEventListener('resize', draw);
+})();
+
+// fig 2: alignment matrix accumulating
+(function () {
+  var c = document.getElementById('align'), x = c.getContext('2d');
+  var n = 8, labels = ['←', '→', '↑', '↓', 'A', 'B', 'L', 'R'];
+  var counts = [], total = 0, MAX = 900;
+  for (var i = 0; i < n; i++) { counts.push([]); for (var j = 0; j < n; j++) counts[i].push(0); }
+  function observe(k) {
+    for (var s = 0; s < k; s++) {
+      var j = Math.floor(Math.random() * n);
+      var i = Math.random() < 0.82 ? j : Math.floor(Math.random() * n);
+      counts[i][j]++; total++;
+    }
+  }
+  function draw() {
+    var w = c.clientWidth, h = c.clientHeight, d = Math.min(devicePixelRatio, 2);
+    c.width = w * d; c.height = h * d; x.setTransform(d, 0, 0, d, 0, 0);
+    x.clearRect(0, 0, w, h);
+    var cell = Math.min(w * 0.6 / n, (h - 78) / n);
+    var ox = (w - cell * n) / 2, oy = 34;
+    x.font = '10px ui-monospace, Menlo, monospace';
+    x.fillStyle = 'rgba(0,0,0,0.45)';
+    for (var i = 0; i < n; i++) {
+      x.fillText(labels[i], ox + i * cell + cell / 2 - 3, oy - 10);
+      x.fillText('a' + i, ox - 22, oy + i * cell + cell / 2 + 3);
+    }
+    var peak = 1;
+    for (var i = 0; i < n; i++) for (var j = 0; j < n; j++) peak = Math.max(peak, counts[i][j]);
+    for (var i = 0; i < n; i++) {
+      for (var j = 0; j < n; j++) {
+        x.fillStyle = 'rgba(0,0,0,' + (counts[i][j] / peak) * 0.92 + ')';
+        x.fillRect(ox + j * cell + 1, oy + i * cell + 1, cell - 2, cell - 2);
+      }
+    }
+    var by = oy + n * cell + 18;
+    x.strokeStyle = 'rgba(0,0,0,0.2)';
+    x.beginPath(); x.moveTo(ox, by); x.lineTo(ox + n * cell, by); x.stroke();
+    x.strokeStyle = 'rgba(0,0,0,0.8)';
+    x.beginPath(); x.moveTo(ox, by); x.lineTo(ox + n * cell * Math.min(1, total / MAX), by); x.stroke();
+    x.fillStyle = 'rgba(0,0,0,0.45)';
+    x.fillText(Math.min(total, MAX) + ' frames observed', ox, by + 14);
+  }
+  if (REDUCED) { observe(MAX); draw(); }
+  else {
+    var restAt = null;
+    setInterval(function () {
+      if (total < MAX) { observe(4); draw(); }
+      else if (restAt === null) restAt = Date.now() + 3000;
+      else if (Date.now() > restAt) {
+        for (var i = 0; i < n; i++) for (var j = 0; j < n; j++) counts[i][j] = 0;
+        total = 0; restAt = null;
+      }
+    }, 50);
+    draw();
+  }
+  addEventListener('resize', draw);
+})();
+</script>
+</body>
+</html>

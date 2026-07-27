@@ -2,28 +2,35 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
   <title>Physical Reasoning Blog</title>
-  <link>https://physicalreasoning.ai/blog.html</link>
+  <link>https://physicalreasoning.ai/blog/</link>
   <description>Research notes from Physical Reasoning: world models, latent actions, and spatial intelligence.</description>
   <language>en</language>
   <atom:link href="https://physicalreasoning.ai/feed.xml" rel="self" type="application/rss+xml"/>
   <item>
+    <title>Evals with teeth</title>
+    <link>https://physicalreasoning.ai/blog/evals-with-teeth/</link>
+    <guid>https://physicalreasoning.ai/blog/evals-with-teeth/</guid>
+    <pubDate>Sat, 25 Jul 2026 00:00:00 GMT</pubDate>
+    <description>Resolved future events are the only contamination-proof benchmark, and prediction markets attach a price to every mistake.</description>
+  </item>
+  <item>
     <title>Prediction is not understanding, until it is</title>
-    <link>https://physicalreasoning.ai/blog-prediction.html</link>
-    <guid>https://physicalreasoning.ai/blog-prediction.html</guid>
+    <link>https://physicalreasoning.ai/blog/prediction-vs-understanding/</link>
+    <guid>https://physicalreasoning.ai/blog/prediction-vs-understanding/</guid>
     <pubDate>Wed, 15 Jul 2026 00:00:00 GMT</pubDate>
     <description>Where pixel-level forecasting diverges from causal competence, and an evaluation protocol that separates the two.</description>
   </item>
   <item>
     <title>Latent actions from unlabeled video</title>
-    <link>https://physicalreasoning.ai/blog-latent-actions.html</link>
-    <guid>https://physicalreasoning.ai/blog-latent-actions.html</guid>
+    <link>https://physicalreasoning.ai/blog/latent-actions/</link>
+    <guid>https://physicalreasoning.ai/blog/latent-actions/</guid>
     <pubDate>Wed, 10 Jun 2026 00:00:00 GMT</pubDate>
     <description>Recovering an agent's control space from observation alone, with no teleoperation and no action logs.</description>
   </item>
   <item>
     <title>Spatial memory at kilometer scale</title>
-    <link>https://physicalreasoning.ai/blog-spatial-memory.html</link>
-    <guid>https://physicalreasoning.ai/blog-spatial-memory.html</guid>
+    <link>https://physicalreasoning.ai/blog/spatial-memory/</link>
+    <guid>https://physicalreasoning.ai/blog/spatial-memory/</guid>
     <pubDate>Tue, 12 May 2026 00:00:00 GMT</pubDate>
     <description>A persistent 3D state representation that keeps generated worlds consistent far beyond the current viewport.</description>
   </item>
