@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://physicalreasoning.ai/</loc><lastmod>2026-07-26</lastmod></url>
-  <url><loc>https://physicalreasoning.ai/blog/</loc><lastmod>2026-07-26</lastmod></url>
-  <url><loc>https://physicalreasoning.ai/blog/prediction-vs-understanding/</loc><lastmod>2026-07-15</lastmod></url>
-  <url><loc>https://physicalreasoning.ai/blog/latent-actions/</loc><lastmod>2026-06-10</lastmod></url>
-  <url><loc>https://physicalreasoning.ai/blog/spatial-memory/</loc><lastmod>2026-05-12</lastmod></url>
-  <url><loc>https://physicalreasoning.ai/blog/evals-with-teeth/</loc><lastmod>2026-07-25</lastmod></url>
+  <url><loc>https://physicalreasoning.ai/</loc><lastmod>2026-08-10</lastmod></url>
 </urlset>

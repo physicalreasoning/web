@@ -4,14 +4,13 @@
 <meta charset="utf-8">
 <meta name="color-scheme" content="light only">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Physical Reasoning is an independent AI research collective building world models: systems with spatial intelligence that simulate physical dynamics, objects, agents, and cause before acting.">
+<meta name="description" content="Physical Reasoning builds the training data and infrastructure that accelerate world models across robotics, self-driving, prediction markets, and the sciences, removing the biggest bottleneck to deploying them in the real world.">
 <meta property="og:title" content="Physical Reasoning">
-<meta property="og:description" content="Physical Reasoning is an independent AI research collective building world models: systems with spatial intelligence that simulate physical dynamics, objects, agents, and cause before acting.">
+<meta property="og:description" content="Physical Reasoning builds the training data and infrastructure that accelerate world models across robotics, self-driving, prediction markets, and the sciences, removing the biggest bottleneck to deploying them in the real world.">
 <meta property="og:url" content="https://physicalreasoning.ai/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://physicalreasoning.ai/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="alternate" type="application/rss+xml" title="Blog" href="https://physicalreasoning.ai/feed.xml">
 <link rel="canonical" href="https://physicalreasoning.ai/">
 <link rel="icon" type="image/svg+xml" href="/logo.svg">
 <title>Physical Reasoning · AI Research Lab for World Models and Spatial Intelligence</title>
@@ -70,9 +69,20 @@
   }
   .hero p { margin-top: 1.4rem; color: var(--muted); }
   .hero-links { display: flex; gap: 2rem; margin-top: 1.8rem; flex-wrap: wrap; }
-  .research-link {
+
+  .about {
+    border-top: 1px solid var(--rule);
+    padding: 2.6rem 0;
+  }
+  .about p { color: var(--muted); margin-bottom: 1.1rem; }
+  .about p:last-of-type { margin-bottom: 0; }
+
+  .waitlist {
+    border-top: 1px solid var(--rule);
+    padding: 2.6rem 0 3rem;
+  }
+  .waitlist-link {
     display: inline-block;
-    margin-top: 2.4rem;
     font-family: var(--mono);
     font-size: 0.75rem;
     letter-spacing: 0.08em;
@@ -82,62 +92,10 @@
     border-bottom: 1px solid var(--ink);
     padding-bottom: 2px;
   }
-  .research-link:hover { color: var(--muted); border-color: var(--muted); }
-  .research-link:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-
-  .partners {
-    border-top: 1px solid var(--rule);
-    padding: 2.5rem 0;
-  }
-  .partners h2 {
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    font-weight: 400;
-    margin-bottom: 1.1rem;
-  }
-  .partners ul {
-    list-style: none;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2.6rem 1.5rem;
-    justify-items: center;
-    padding: 1rem 0;
-  }
-  .partners a {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
-    font-size: 0.95rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    color: var(--muted);
-    opacity: 0.55;
-    transition: opacity 120ms;
-  }
-  .partners a:hover { opacity: 1; }
-  .partners a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-  .partners img {
-    width: 34px;
-    height: 34px;
-    display: block;
-    object-fit: contain;
-    filter: grayscale(1);
-  }
-  .partners a[title="OpenAI"] img,
-  .partners a[title="Meta Superintelligence"] img { width: 42px; height: 42px; }
-  .partners a[title="Stanford"] img { width: 26px; height: 26px; }
-  .partners a[title="Nvidia"] { transform: translateY(4px); }
-  .partners a[title="Meta Superintelligence"] { transform: translateY(-4px); }
-  .partners a[title="DRW"] img { mix-blend-mode: multiply; }
-  @media (prefers-reduced-motion: reduce) { .partners a { transition: none; } }
+  .waitlist-link:hover { color: var(--muted); border-color: var(--muted); }
+  .waitlist-link:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
   @media (max-width: 560px) {
     .hero { padding: 3rem 0 2.5rem; }
-    .partners ul { grid-template-columns: repeat(2, 1fr); gap: 2rem 1rem; }
   }
 
   footer {
@@ -149,7 +107,7 @@
     color: var(--muted);
   }
 </style>
-<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Organization", "name": "Physical Reasoning", "alternateName": ["Physical Reasoning AI", "physicalreasoning.ai"], "url": "https://physicalreasoning.ai/", "logo": "https://physicalreasoning.ai/og.png", "email": "contact@physicalreasoning.ai", "description": "Physical Reasoning is an independent AI research collective exploring the frontier of spatial intelligence and world models."}, {"@context": "https://schema.org", "@type": "WebSite", "name": "Physical Reasoning", "url": "https://physicalreasoning.ai/"}]</script>
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Organization", "name": "Physical Reasoning", "alternateName": ["Physical Reasoning AI", "physicalreasoning.ai"], "url": "https://physicalreasoning.ai/", "logo": "https://physicalreasoning.ai/og.png", "email": "contact@physicalreasoning.ai", "description": "Physical Reasoning builds the training data and infrastructure that accelerate world models across robotics, self-driving, prediction markets, and the sciences."}, {"@context": "https://schema.org", "@type": "WebSite", "name": "Physical Reasoning", "url": "https://physicalreasoning.ai/"}]</script>
 </head>
 <body>
 <div class="wrap">
@@ -159,24 +117,17 @@
   </nav>
 
   <header class="hero">
-    <h1>Most of reality is never written down. We align models that learn the world by imagining what happens next.</h1>
-    <p>Physical Reasoning is an independent research collective exploring the frontier of spatial intelligence: world models that internalize physical dynamics, objects, agents, and cause, so machines can simulate consequences before they act.</p>
-    <a class="research-link" href="/blog/">Read our blog &rarr;</a>
+    <h1>Most of reality is never written down. We build the data and infrastructure that teaches world models what happens next.</h1>
+    <p>Physical Reasoning accelerates the development of world models across robotics, self-driving, prediction markets, and the sciences. By providing the training data and infrastructure these models need, we remove the biggest bottleneck to deploying world models in the real world.</p>
   </header>
 
+  <section class="about">
+    <p>World models are fast becoming the backbone of robotics, self-driving, and prediction markets, systems that have to simulate what happens next before they act.</p>
+    <p>As with large language models, data and infrastructure are the primary bottleneck to putting world models to work. The technology is still in early adoption, and there isn't much data built for it yet. We provide both: the training data these models learn from, and the infrastructure to run them at scale.</p>
+  </section>
 
-  <section class="partners">
-    <h2>Founded by technical leaders and researchers at</h2>
-    <ul>
-      <li><a href="https://openai.com" title="OpenAI"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAFl0lEQVR4nOVasUs7TRCdLD8FJYVEQTu1EatUioUWVjYBjf4Dxk4QtApYKVZ2Eay0UrAOWFkLQRDSqE1sLBRMZaqoQS3244XvjnGzt7m93CXCDSxccrt3O2/nzczOXkJKSXEWQTEXQTEXQTEXQTEXQTEXQTEXQTEXQTEXQTGXf9160fv7u3x6eqKfn5/m72QySdPT0wnqtUgpI23FYlGm02nk29q2ubkpK5WKjHoeXo2ienCpVJITExOeiqstn8/Lr6+vrgOQiGIzdH5+Ljc2Ntzf6XSacrkczc7O0sjICOhALy8vdHFxQZeXl7/67e/v0+3tLd3f39PHxwcNDQ01xywvL9Pi4iKlUqlwaSMjMHlnVVOplLy6ujKa9+vrq8xkMlaWUq/XQ6MMhak8lHEmCt5/fn62HXN2diYHBwdbFJ2ZmZHZbNaTRuVyWf45ALLZrDvBdsrDR8BCuFIYf3d3p1UMCi8tLf3q3866ugpApVJxJwYamKyEA+VYi98V5RRDw/P+BAAnJyfupHT34eH39vZaTNkEllfDyjvj5+fnewtArVaThUJBjo2NNSe0vr4uTRN2GsAw0aRdbsDBBJ16AsDh4WGLYgDDpDwAMpkt7w8H6KUcIgF/ZlcBqNfrTdPTeWcVAE4N00phxVUnx52jDjRkkU6foEkU2Q7Ai6amptwXI4Zj8s5/JgB0zwMNENt1FFH/g8VxRRFCnXugYlcA2N7e/pWUOP87PsAGANWjq4kOlOLvQ0PO4IQ/RA7nf6/wGSoAZfZCzjusig0AmKxKISQ+Xr5BRw/QgltA0A0V2XTmKStPR/0CgH7qito6SF3WqM4nEgBqtdovfvJ7fgFQG1aQryLnumkuumdG7gNKpZIn32wBUHMAXNsmSVhxWAzPJoNEAvLbkTss1dz8AoCwZTJx3OOhzcn0TA4O73P6gl5/GgDpd1IaukA5LzPnlmAbDYTfusHAwIB7/f39Td2QTCbjXh8fH9Pw8DCdnp42EeJSKBTc66OjI7uXyAAhUM3oYAHO1haWwHd2nVgAHCSerSZKiEbqGB5dbHwB+e2Ih5q4pm5x8Rsmy728LQAAj/sHXlxVacidtE2xhGz4wrmmc2a6kMYTnk4AUK1JBYCHaZtCibChy+7urnu9tbXVcj+XyyXq9TpCmvvfzc0NdUP6+/vd60aj4XucsHkJDjLy+XzzGtXcnZ2dFoeUTCYTBwcHiUql8suJQVZXV+Xj42PLGEdwD32oQ+EOu61ICwro+I4c3RTbdbU/tbKLa92O0IYC3ElH5gMky9x06avJ++r8g1cqHAQADqCfanRHANSYw7FNX3UpL48uPNr4BYCX422rQxRGBVgNgab0FWPVs0LQiG9nbQHgW2XbbTEFAQDKqamn7iwQeb2TvmLCuq2wLmT5AcChGw/NvEATKQCvzORUBXS7P53iJp/RDgBkmwAcRRRTdtgVJ5jXoI7VVnd1QarCJgvgLajyspOyODc9L6/LS18omprCE7irlslU6+JbXy+QugZAieXe7So4phXX5QAAS1dCd6wKvgaKB60ChQKAVLxvkINKXQ5gWlGeP3SqeCgAvDJnaDMxrC4/W3AcpWlFeUGm0wPR0ACQChWcHADWoPML8AlqzgBP3i52h3UMFgkAUkmMeEMJGwrzcMV57oc2UJ5bSxi8Dx0A+X/BRHdY6tVgKe1WHtbFzwE6OQXu2kdSjUaDrq+vJT50en5+pre3N+rr66O5uTlaWFho1hR4jSCbzdLKygqNjo7S5ORks3+5XMaHVvTw8OD2KxaLtLa2Fv53hTJkRMO2FIS8sL4HipQC0rLBk5uAwIYpyNcjPadAEKlWq7Jarbqf0I6PjyesqjodSOIvANBLERRzERRzERRzERRzERRzERRzERRzERRzEb2eQK/lP0VaeEIA3KNiAAAAAElFTkSuQmCC" alt=""></a></li>
-      <li><a href="https://www.nvidia.com" title="Nvidia">NVIDIA</a></li>
-      <li><a href="https://ai.meta.com/superintelligence/" title="Meta Superintelligence"><img src="data:image/png;base64,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" alt=""></a></li>
-      <li><a href="https://www.stanford.edu" title="Stanford"><img src="https://www.google.com/s2/favicons?domain=stanford.edu&sz=64" alt=""></a></li>
-      <li><a href="https://ramp.com" title="Ramp"><img src="https://www.google.com/s2/favicons?domain=ramp.com&sz=64" alt=""></a></li>
-      <li><a href="https://www.snowflake.com" title="Snowflake"><img src="https://www.google.com/s2/favicons?domain=snowflake.com&sz=64" alt=""></a></li>
-      <li><a href="https://drw.com" title="DRW"><img src="data:image/png;base64,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" alt=""></a></li>
-      <li><a href="https://mercor.com" title="Mercor"><img src="https://www.google.com/s2/favicons?domain=mercor.com&sz=64" alt=""></a></li>
-    </ul>
+  <section class="waitlist" id="waitlist">
+    <a class="waitlist-link" href="mailto:contact@physicalreasoning.ai?subject=Waitlist%20request">Join the waitlist &rarr;</a>
   </section>
 
   <footer>© 2026 Physical Reasoning</footer>
