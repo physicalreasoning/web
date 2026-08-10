@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light only">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Where pixel-level forecasting diverges from causal competence, and an evaluation protocol that separates the two.">
+<meta property="og:title" content="Prediction is not understanding, until it is">
+<meta property="og:description" content="Where pixel-level forecasting diverges from causal competence, and an evaluation protocol that separates the two.">
+<meta property="og:url" content="https://physicalreasoning.ai/blog/prediction-vs-understanding/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://physicalreasoning.ai/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://physicalreasoning.ai/blog/prediction-vs-understanding/">
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<title>Prediction is not understanding, until it is · Physical Reasoning</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    color-scheme: light only;
+    --paper: #FFFFFF;
+    --ink: #000000;
+    --muted: #6B6B6B;
+    --rule: #E8E8E8;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  body {
+    font-family: var(--serif);
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.7;
+    font-size: 17px;
+  }
+  .wrap { max-width: 38rem; margin: 0 auto; padding: 0 1.25rem; }
+  nav {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 1.8rem 0;
+  }
+  .wordmark {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .back {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .back:hover { color: var(--ink); }
+  article { padding: 3rem 0 4rem; }
+  @media (max-width: 560px) { article { padding: 2rem 0 3rem; } }
+  .meta {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  article h1 {
+    font-size: clamp(1.45rem, 5vw, 1.9rem);
+    font-weight: 400;
+    line-height: 1.35;
+    text-wrap: balance;
+    margin-bottom: 1.8rem;
+  }
+  article p { margin-bottom: 1.2rem; }
+  article p:first-of-type { font-size: 1.08rem; color: var(--muted); }
+  figure { margin: 2.4rem 0; }
+  figure canvas { width: 100%; height: 260px; display: block; }
+  figcaption {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-top: 0.6rem;
+  }
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0 3rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+</style>
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Prediction is not understanding, until it is", "description": "Where pixel-level forecasting diverges from causal competence, and an evaluation protocol that separates the two.", "url": "https://physicalreasoning.ai/blog/prediction-vs-understanding/", "datePublished": "2026-07-15", "author": {"@type": "Organization", "name": "Physical Reasoning"}, "publisher": {"@type": "Organization", "name": "Physical Reasoning", "logo": {"@type": "ImageObject", "url": "https://physicalreasoning.ai/og.png"}}, "mainEntityOfPage": "https://physicalreasoning.ai/blog/prediction-vs-understanding/", "image": "https://physicalreasoning.ai/og.png"}]</script>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="wordmark" href="/">[Pr]</a>
+    <a class="back" href="/blog/">&larr; Blog</a>
+  </nav>
+
+  <article>
+    <div class="meta">July 2026 · Research notes</div>
+    <h1>Prediction is not understanding, until it is</h1>
+    <p>A model can predict the next frame almost perfectly and still not understand the scene. The loss curve looks the same either way, and that is the problem.</p>
+    <p>When we train video world models, the objective is almost always some flavor of reconstruction: predict what the sensor will see next. The hope is that to get good at this, the model is forced to learn objects, permanence, contact, and cause. Sometimes that happens. Often the model finds a cheaper path, exploiting texture statistics and camera motion priors that generalize just well enough to keep the loss falling.</p>
+    <p>The failure only becomes visible under intervention. Ask the model what happens if the cup at the edge of the table is nudged, and the texture-statistics model produces a plausible-looking video where the cup does something physically incoherent, because nothing in its training pressure ever required a concept of "cup" that persists when pushed.</p>
+    <figure>
+      <canvas id="viz"></canvas>
+      <figcaption>fig. 1: two models on the same loss surface, one settles into structure, one into texture</figcaption>
+    </figure>
+    <p>Our position is that the distinction is measurable, and should be measured directly. We evaluate world models not on held-out prediction error but on counterfactual consistency: does the model's imagined outcome of an intervention agree with reality when we actually perform it? On this metric, models with nearly identical validation loss separate by a wide margin.</p>
+    <p>Training optimizes prediction error. What we report instead is the consistency gap: the distance between what the model imagines under an intervention and what actually happens when we perform it. The two quantities are not the same thing, and only the second one tells you whether the model has learned the world or just its surface.</p>
+    <p>A model that holds up under intervention is one you can plan with. That is the bar we use.</p>
+  </article>
+
+  <footer>© 2026 Physical Reasoning</footer>
+</div>
+<script>
+(function () {
+  var c = document.getElementById('viz'), x = c.getContext('2d');
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function draw(t) {
+    var w = c.clientWidth, h = c.clientHeight, d = Math.min(devicePixelRatio, 2);
+    c.width = w * d; c.height = h * d; x.setTransform(d, 0, 0, d, 0, 0);
+    x.clearRect(0, 0, w, h);
+    x.strokeStyle = 'rgba(0,0,0,0.30)';
+    x.lineWidth = 1;
+    // isometric ripple surface: rows of z = exp(-r)*cos(3r)
+    var rows = 26, cols = 60, cx = w / 2, cy = h * 0.52;
+    for (var j = 0; j < rows; j++) {
+      x.beginPath();
+      for (var i = 0; i <= cols; i++) {
+        var u = (i / cols - 0.5) * 2, v = (j / (rows - 1) - 0.5) * 2;
+        var r = Math.sqrt(u * u + v * v) * 3.2;
+        var z = Math.exp(-r * 0.55) * Math.cos(r * 2.6 - t * 0.0006) * 34;
+        var px = cx + (u - v) * w * 0.30;
+        var py = cy + (u + v) * h * 0.16 - z;
+        i ? x.lineTo(px, py) : x.moveTo(px, py);
+      }
+      x.stroke();
+    }
+  }
+  draw(0);
+  if (!reduced) (function loop(t) { draw(t); requestAnimationFrame(loop); })(0);
+  addEventListener('resize', function () { draw(0); });
+})();
+</script>
+</body>
+</html>
