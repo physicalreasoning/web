@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light only">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="We attacked our own martingale-collapse detector and it held. Then everything else came apart: more training made the representation worse, and the metric we had ranked every model by was mostly measuring input reconstruction.">
+<meta property="og:title" content="We tried to break our own diagnostic">
+<meta property="og:description" content="We attacked our own martingale-collapse detector and it held. Then everything else came apart: more training made the representation worse, and the metric we had ranked every model by was mostly measuring input reconstruction.">
+<meta property="og:url" content="https://physicalreasoning.ai/blog/we-tried-to-break-our-own-diagnostic/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://physicalreasoning.ai/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://physicalreasoning.ai/blog/we-tried-to-break-our-own-diagnostic/">
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<title>We tried to break our own diagnostic · Physical Reasoning</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    color-scheme: light only;
+    --paper: #FFFFFF;
+    --ink: #000000;
+    --muted: #6B6B6B;
+    --rule: #E8E8E8;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  body {
+    font-family: var(--serif);
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.7;
+    font-size: 17px;
+  }
+  .wrap { max-width: 38rem; margin: 0 auto; padding: 0 1.25rem; }
+  nav {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 1.8rem 0;
+  }
+  .wordmark {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .back {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .back:hover { color: var(--ink); }
+  article { padding: 3rem 0 4rem; }
+  @media (max-width: 560px) { article { padding: 2rem 0 3rem; } }
+  .meta {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  article h1 {
+    font-size: clamp(1.45rem, 5vw, 1.9rem);
+    font-weight: 400;
+    line-height: 1.35;
+    text-wrap: balance;
+    margin-bottom: 1.8rem;
+  }
+  article p { margin-bottom: 1.2rem; }
+  article p:first-of-type { font-size: 1.08rem; color: var(--muted); }
+  figure { margin: 2.4rem 0; }
+  figure canvas { width: 100%; height: 260px; display: block; }
+  figcaption {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-top: 0.6rem;
+  }
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0 3rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+</style>
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "We tried to break our own diagnostic", "description": "We attacked our own martingale-collapse detector and it held. Then everything else came apart: more training made the representation worse, and the metric we had ranked every model by was mostly measuring input reconstruction.", "url": "https://physicalreasoning.ai/blog/we-tried-to-break-our-own-diagnostic/", "datePublished": "2026-08-10", "author": {"@type": "Organization", "name": "Physical Reasoning"}, "publisher": {"@type": "Organization", "name": "Physical Reasoning", "logo": {"@type": "ImageObject", "url": "https://physicalreasoning.ai/og.png"}}, "mainEntityOfPage": "https://physicalreasoning.ai/blog/we-tried-to-break-our-own-diagnostic/", "image": "https://physicalreasoning.ai/og.png"}]</script>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="wordmark" href="/">[Pr]</a>
+    <a class="back" href="/blog/">&larr; Blog</a>
+  </nav>
+
+  <article>
+    <div class="meta">August 2026 &middot; Research notes</div>
+    <h1>We tried to break our own diagnostic</h1>
+
+    <p>An instrument you have never attacked is not an instrument, it is an assumption. So we spent a week building the strongest attack we could against our own martingale-collapse detector. It held. Then almost everything else we believed came apart.</p>
+
+    <p>The detector exists because prediction-market prices are close to a martingale, so a model can drive its objective down by learning something very near the identity map. That map has full rank and full per-dimension variance, so it passes every standard collapse check while encoding nothing. Our copy oracle scores the model against an explicit copy of the nearest visible embedding, and on real Kalshi strike ladders it reported alignment of 0.964. Copying, everywhere.</p>
+
+    <p>Then we found a reason to doubt our own number. The target encoder ran unmasked attention across the whole window, so under temporal masking the target at a <em>visible</em> patch was computed with attention over the <em>masked</em> ones. The oracle's reference was contaminated with the future. If that was what made copying look easy, the detector was measuring our architecture rather than the market, and a month of conclusions would have to go. The test is clean: make the time axis of the target tower causal, change nothing else, run the two-by-two over which towers are causal, four seeds per cell.</p>
+
+    <figure>
+      <canvas id="fig1"></canvas>
+      <figcaption>fig. 1: copy alignment and probe R&sup2; across four causality configurations, four seeds each, error bars at one standard deviation</figcaption>
+    </figure>
+
+    <p>The contamination was real. Reading identical weights out both ways, the two target towers genuinely differ, by 12.7 percent in relative L2 at the earliest patch. And removing it changed nothing that mattered: copy alignment moved from 0.9641 to 0.9616, probe R&sup2; from +0.3919 to +0.3924, a Welch t of 0.09. We built the attack, confirmed the flaw it was aimed at, and the detector did not move. The copying is the market.</p>
+
+    <p>So we went looking for what else we had never checked. Every conclusion rested on a six-hundred-step budget nobody had pushed past, so we pushed: three seeds, 19,200 steps, probed at six checkpoints against an untrained encoder of the same architecture.</p>
+
+    <figure>
+      <canvas id="fig2"></canvas>
+      <figcaption>fig. 2: the MLP probe against an untrained encoder of the same architecture, and effective rank, across one 19,200-step schedule. three seeds</figcaption>
+    </figure>
+
+    <p>Thirty-two times the compute bought nothing. The ridge probe is flat, +0.4006 to +0.3965. The nonlinear probe peaks at the very first checkpoint and falls 0.091 from there, ending 23 pooled standard deviations <em>below</em> the untrained floor. The part we find hardest to unsee is the second line: effective rank nearly triples over the same run, 36 to 94, while utility falls. Rank is the standard check for representational collapse, and here it is not merely blind to the failure, it points confidently the wrong way.</p>
+
+    <p>Nor is the copy oracle any better as a guide. Both anti-collapse regularisers this programme had written off turned out never to have been switched on: each was computed on a detached target, in two separate repositories, contributing exactly zero gradient to every run either of them ever did. Put them back in and they work, and copy alignment falls from 0.965 to 0.776. Nothing improves; at the strongest settings the MLP probe gets worse. Across twenty-seven runs the diagnostic spans a range of 0.198 while probe R&sup2; spans 0.035, and the correlation between the two is <em>positive</em>. We can set the number almost anywhere we like with one hyperparameter, and nothing downstream follows.</p>
+
+    <p>That left the comparison the whole programme was built on, and it did not survive either. We had been ranking every model by a mean over four probe targets. One of them is documented in our own data code as a derivable function of the input, a sanity check whose low values mean the encoder is broken rather than that the result is interesting, and nearly the entire gap between our models and raw features lives there: the best raw arm scores +0.9407 on it against the best learned readout's +0.7552. A compressed embedding cannot beat the raw input at reproducing a function of that input, so it was never a comparison anyone could win.</p>
+
+    <p>On the one target that is genuinely about the future, every arm we have ever run lands between &minus;0.004 and +0.051. Raw features, untrained encoders and every trained model, indistinguishable from each other and from zero. The number the programme was optimising was largely measuring how well a model reconstructs its own input, and the number anyone would actually trade on was flat the whole time.</p>
+
+    <p>None of which means the objective is broken. On a simulator where we control the hidden state and know it is recoverable, the same objective beats raw features comfortably, and beats them by <em>more</em> as the observations get noisier.</p>
+
+    <figure>
+      <canvas id="fig3"></canvas>
+      <figcaption>fig. 3: on the simulator, learned representation versus raw features against observation-noise multiplier. the gap widens as the data degrades</figcaption>
+    </figure>
+
+    <p>Across a thirty-two-fold range of quote noise the advantage never crosses zero and more than doubles, from +0.0690 to +0.1502. Raw features fall apart, +0.8239 to +0.6734, while the learned representation barely moves, +0.8928 to +0.8237. Where there is hidden state to recover, this class of model recovers it and keeps recovering it long after the raw cross-section has stopped being usable. Our target set simply had none in it.</p>
+
+    <p>We are stopping here rather than reaching for a bigger model, because the experiments that would have justified one came back negative. What would restart this is not more parameters or more steps, it is a target with something in it: realised volatility over a future window, or the settlement of a different correlated market.</p>
+
+    <p>None of this came from a new idea. It came from varying a readout we had never varied, matching control widths we had never matched, decomposing a mean we had quoted for a month, and checking whether a regulariser we had dismissed was ever running. Attack your instruments before you trust them. Then check what they predict, because an instrument can be perfectly sound and still measure nothing you care about.</p>
+  </article>
+
+  <footer>&copy; 2026 Physical Reasoning</footer>
+</div>
+<script>
+(function () {
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var INK = 'rgba(0,0,0,0.82)', MUTED = 'rgba(0,0,0,0.32)', FAINT = 'rgba(0,0,0,0.12)';
+  var MONO = '10px ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+
+  function setup(c) {
+    var w = c.clientWidth, h = c.clientHeight, d = Math.min(devicePixelRatio, 2);
+    c.width = w * d; c.height = h * d;
+    var x = c.getContext('2d');
+    x.setTransform(d, 0, 0, d, 0, 0);
+    x.clearRect(0, 0, w, h);
+    x.font = MONO;
+    return { x: x, w: w, h: h };
+  }
+
+  var ARMS = [
+    { l: 'ctx b\ntgt b', copy: 0.9641, cs: 0.0040, r2: 0.3919, rs: 0.0058 },
+    { l: 'ctx b\ntgt c', copy: 0.9616, cs: 0.0045, r2: 0.3924, rs: 0.0069 },
+    { l: 'ctx c\ntgt b', copy: 0.9539, cs: 0.0035, r2: 0.4018, rs: 0.0034 },
+    { l: 'ctx c\ntgt c', copy: 0.9539, cs: 0.0035, r2: 0.4011, rs: 0.0036 }
+  ];
+
+  function fig2x2(p) {
+    var x = p.x, w = p.w, h = p.h;
+    var ml = 34, mr = 34, mt = 22, mb = 40;
+    var pw = w - ml - mr, ph = h - mt - mb;
+    var cTop = 0.975, cBot = 0.945, rTop = 0.410, rBot = 0.380;
+    function yc(v) { return mt + (cTop - v) / (cTop - cBot) * (ph * 0.42); }
+    function yr(v) { return mt + ph * 0.58 + (rTop - v) / (rTop - rBot) * (ph * 0.42); }
+
+    x.strokeStyle = FAINT; x.lineWidth = 1;
+    x.beginPath(); x.moveTo(ml, mt); x.lineTo(ml, mt + ph); x.stroke();
+
+    x.fillStyle = MUTED; x.textAlign = 'right'; x.textBaseline = 'middle';
+    x.fillText('0.975', ml - 5, yc(0.975));
+    x.fillText('0.945', ml - 5, yc(0.945));
+    x.fillText('0.410', ml - 5, yr(0.410));
+    x.fillText('0.380', ml - 5, yr(0.380));
+
+    x.textAlign = 'left'; x.fillStyle = INK;
+    x.fillText('copy alignment', ml + 4, mt - 10);
+    x.fillText('ridge R²', ml + 4, mt + ph * 0.58 - 10);
+
+    function series(get, ys, err) {
+      x.strokeStyle = INK; x.lineWidth = 1.4;
+      x.beginPath();
+      ARMS.forEach(function (a, i) {
+        var px = ml + (i + 0.5) / ARMS.length * pw, py = ys(get(a));
+        i ? x.lineTo(px, py) : x.moveTo(px, py);
+      });
+      x.stroke();
+      ARMS.forEach(function (a, i) {
+        var px = ml + (i + 0.5) / ARMS.length * pw, py = ys(get(a));
+        var e = err(a), hi = ys(get(a) + e), lo = ys(get(a) - e);
+        x.strokeStyle = MUTED; x.lineWidth = 1;
+        x.beginPath(); x.moveTo(px, hi); x.lineTo(px, lo); x.stroke();
+        x.beginPath(); x.moveTo(px - 3, hi); x.lineTo(px + 3, hi); x.stroke();
+        x.beginPath(); x.moveTo(px - 3, lo); x.lineTo(px + 3, lo); x.stroke();
+        x.fillStyle = '#FFF'; x.beginPath(); x.arc(px, py, 3, 0, 6.284); x.fill();
+        x.strokeStyle = INK; x.lineWidth = 1.4; x.stroke();
+      });
+    }
+    series(function (a) { return a.copy; }, yc, function (a) { return a.cs; });
+    series(function (a) { return a.r2; }, yr, function (a) { return a.rs; });
+
+    x.fillStyle = MUTED; x.textAlign = 'center'; x.textBaseline = 'top';
+    ARMS.forEach(function (a, i) {
+      var px = ml + (i + 0.5) / ARMS.length * pw;
+      a.l.split('\n').forEach(function (line, j) {
+        x.fillText(line, px, mt + ph + 8 + j * 12);
+      });
+    });
+  }
+
+  var STEPS = [600, 1200, 2400, 4800, 9600, 19200];
+  var MLP   = [0.3966, 0.3860, 0.3198, 0.3307, 0.3089, 0.3055];
+  var RANK  = [36.4, 47.1, 64.1, 80.0, 92.3, 93.8];
+  var FLOOR = 0.3829;
+
+  function figTraj(p, k) {
+    var x = p.x, w = p.w, h = p.h;
+    var ml = 40, mr = 40, mt = 26, mb = 36;
+    var pw = w - ml - mr, ph = h - mt - mb;
+    function px(i) { return ml + i / (STEPS.length - 1) * pw; }
+    function ym(v) { return mt + (0.41 - v) / (0.41 - 0.29) * ph; }
+    function yr(v) { return mt + ph - (v / 100) * ph; }
+
+    x.strokeStyle = FAINT; x.lineWidth = 1;
+    [0.30, 0.34, 0.38].forEach(function (g) {
+      x.beginPath(); x.moveTo(ml, ym(g)); x.lineTo(ml + pw, ym(g)); x.stroke();
+      x.fillStyle = MUTED; x.textAlign = 'right'; x.textBaseline = 'middle';
+      x.fillText(g.toFixed(2), ml - 5, ym(g));
+    });
+
+    // untrained floor
+    x.strokeStyle = 'rgba(0,0,0,0.45)'; x.setLineDash([4, 3]); x.lineWidth = 1;
+    x.beginPath(); x.moveTo(ml, ym(FLOOR)); x.lineTo(ml + pw, ym(FLOOR)); x.stroke();
+    x.setLineDash([]);
+    // right-aligned so it clears the descending probe line at the left edge
+    x.fillStyle = MUTED; x.textAlign = 'right'; x.textBaseline = 'bottom';
+    x.fillText('untrained encoder', ml + pw - 2, ym(FLOOR) - 4);
+
+    // effective rank, faint
+    x.strokeStyle = MUTED; x.lineWidth = 1.2;
+    x.beginPath();
+    RANK.forEach(function (v, i) {
+      var vv = RANK[0] + (v - RANK[0]) * k;
+      i ? x.lineTo(px(i), yr(vv)) : x.moveTo(px(i), yr(vv));
+    });
+    x.stroke();
+    x.fillStyle = MUTED; x.textAlign = 'left'; x.textBaseline = 'middle';
+    x.fillText('rank', ml + pw + 5,
+               yr(RANK[0] + (RANK[RANK.length - 1] - RANK[0]) * k));
+
+    // MLP probe, bold
+    x.strokeStyle = INK; x.lineWidth = 1.8;
+    x.beginPath();
+    MLP.forEach(function (v, i) {
+      var vv = MLP[0] + (v - MLP[0]) * k;
+      i ? x.lineTo(px(i), ym(vv)) : x.moveTo(px(i), ym(vv));
+    });
+    x.stroke();
+    MLP.forEach(function (v, i) {
+      var vv = MLP[0] + (v - MLP[0]) * k;
+      x.fillStyle = '#FFF'; x.beginPath(); x.arc(px(i), ym(vv), 3, 0, 6.284); x.fill();
+      x.strokeStyle = INK; x.lineWidth = 1.5; x.stroke();
+    });
+    x.fillStyle = INK; x.textAlign = 'left'; x.textBaseline = 'middle';
+    x.fillText('mlp R²', ml + 4, mt - 12);
+
+    x.fillStyle = MUTED; x.textAlign = 'center'; x.textBaseline = 'top';
+    STEPS.forEach(function (s, i) {
+      if (i % 2 === 0 || i === STEPS.length - 1) x.fillText(s, px(i), mt + ph + 8);
+    });
+  }
+
+  var NOISE = [0.5, 1, 2, 4, 8, 16];
+  var IDENT = [0.8239, 0.8229, 0.8153, 0.7952, 0.7538, 0.6734];
+  var JEPA  = [0.8928, 0.8823, 0.8791, 0.8618, 0.8466, 0.8237];
+
+  function figNoise(p, k) {
+    var x = p.x, w = p.w, h = p.h;
+    var ml = 38, mr = 46, mt = 26, mb = 36;
+    var pw = w - ml - mr, ph = h - mt - mb;
+    function px(i) { return ml + i / (NOISE.length - 1) * pw; }
+    function yv(v) { return mt + (0.92 - v) / (0.92 - 0.64) * ph; }
+
+    x.strokeStyle = FAINT; x.lineWidth = 1;
+    [0.70, 0.80, 0.90].forEach(function (g) {
+      x.beginPath(); x.moveTo(ml, yv(g)); x.lineTo(ml + pw, yv(g)); x.stroke();
+      x.fillStyle = MUTED; x.textAlign = 'right'; x.textBaseline = 'middle';
+      x.fillText(g.toFixed(2), ml - 5, yv(g));
+    });
+
+    // shaded advantage band
+    x.fillStyle = 'rgba(0,0,0,0.07)';
+    x.beginPath();
+    JEPA.forEach(function (v, i) {
+      var vv = JEPA[0] + (v - JEPA[0]) * k;
+      i ? x.lineTo(px(i), yv(vv)) : x.moveTo(px(i), yv(vv));
+    });
+    for (var i = IDENT.length - 1; i >= 0; i--) {
+      var vv = IDENT[0] + (IDENT[i] - IDENT[0]) * k;
+      x.lineTo(px(i), yv(vv));
+    }
+    x.closePath(); x.fill();
+
+    [[JEPA, INK, 1.8, 'jepa'], [IDENT, MUTED, 1.3, 'raw']].forEach(function (s) {
+      var vals = s[0];
+      x.strokeStyle = s[1]; x.lineWidth = s[2];
+      x.beginPath();
+      vals.forEach(function (v, i) {
+        var vv = vals[0] + (v - vals[0]) * k;
+        i ? x.lineTo(px(i), yv(vv)) : x.moveTo(px(i), yv(vv));
+      });
+      x.stroke();
+      var last = vals[0] + (vals[vals.length - 1] - vals[0]) * k;
+      x.fillStyle = s[1]; x.textAlign = 'left'; x.textBaseline = 'middle';
+      x.fillText(s[3], ml + pw + 7, yv(last));
+    });
+
+    x.fillStyle = MUTED; x.textAlign = 'center'; x.textBaseline = 'top';
+    NOISE.forEach(function (n, i) { x.fillText(n + 'x', px(i), mt + ph + 8); });
+    x.textAlign = 'left';
+    x.fillText('observation noise', ml + 4, mt - 14);
+  }
+
+  var FIGS = [
+    { id: 'fig1', fn: function (p) { fig2x2(p); } },
+    { id: 'fig2', fn: figTraj },
+    { id: 'fig3', fn: figNoise }
+  ];
+  function render(k) {
+    FIGS.forEach(function (f) {
+      var c = document.getElementById(f.id);
+      if (c) f.fn(setup(c), k);
+    });
+  }
+  render(reduced ? 1 : 0);
+  if (!reduced) {
+    var t0 = null;
+    requestAnimationFrame(function step(ts) {
+      if (t0 === null) t0 = ts;
+      var k = Math.min((ts - t0) / 1000, 1);
+      render(1 - Math.pow(1 - k, 3));
+      if (k < 1) requestAnimationFrame(step);
+    });
+  }
+  addEventListener('resize', function () { render(1); });
+})();
+</script>
+</body>
+</html>
