@@ -153,16 +153,28 @@
       <figcaption>fig. 3: on the simulator, learned representation versus raw features against observation-noise multiplier. the gap widens as the data degrades</figcaption>
     </figure>
 
-    <p>Across a thirty-two-fold range of quote noise the advantage never crosses zero and more than doubles, from +0.0690 to +0.1502. Raw features fall apart, +0.8239 to +0.6734, while the learned representation barely moves, +0.8928 to +0.8237. Where there is hidden state to recover, this class of model recovers it and keeps recovering it long after the raw cross-section has stopped being usable. Our target set simply had none in it.</p>
+    <p>Across a thirty-two-fold range of quote noise the advantage never crosses zero and more than doubles, from +0.0690 to +0.1502. Raw features fall apart, +0.8239 to +0.6734, while the learned representation barely moves, +0.8928 to +0.8237. Where there is hidden state to recover, this class of model recovers it and keeps recovering it long after the raw cross-section has stopped being usable. Our target set had none in it. For a while that looked like the whole explanation.</p>
 
-    <p>We are stopping here rather than reaching for a bigger model, because the experiments that would have justified one came back negative. What would restart this is not more parameters or more steps, it is a target with something in it: realised volatility over a future window, or the settlement of a different correlated market.</p>
+    <p>We are stopping here rather than reaching for a bigger model, because the experiments that would have justified one came back negative. What would restart this, we wrote at the time, is not more parameters or more steps but a target with something in it: realised volatility over a future window, or the settlement of a different correlated market. We have since run both, and neither did.</p>
+
+    <p>Volatility gave us the clearest training signal the project ever produced. We built targets that divide the market's own forecast out of what actually happened, checked before training that raw features left room on them, and measured 7.7 pooled standard deviations over an untrained encoder at matched width, replicated at a second horizon. Then we subtracted what raw features already explain and probed the remainder. Nothing survived: no arm predicted it better than its own mean. The lift was the encoder getting better at representing its input, on a target that still had an input-derivable half to pay it for doing so.</p>
+
+    <p>The correlated market turned out to be sitting in our own cache. Bitcoin and Ethereum hourly events run side by side, and future realised correlation between them is predictable from the pair at +0.3693, against +0.2629 from a single ladder duplicated to the same width. A ladder prices where <em>one</em> asset lands, so the dependence between two is in neither of them at any strike, and for about an hour we thought this was the one clean positive result in the programme.</p>
+
+    <p>It is not. A single number, the correlation realised <em>inside</em> the window, already gets +0.2718. Five hand-picked numbers, the two implied volatilities, the two realised ones and that lagged correlation, get +0.3462. Against those five, the entire 768-dimensional ladder readout adds +0.0234, with a bootstrap interval running from &minus;0.0389 to +0.0840. Correlation persists, and it rises with volatility. Both are textbook. Our width-matched control was the wrong control: duplicating one ladder holds the dimension fixed but starves the comparison of the second asset by construction, and you cannot compute a correlation from one asset. The right control was five numbers, and we did not run it until after we had written the result up.</p>
+
+    <p>The model lost here too, by 6.6 pooled standard deviations, with its largest lift yet dissolving under the same control. On the remainder, an untrained encoder scored <em>higher</em> than every trained one.</p>
+
+    <p>Which leaves the lift over an untrained encoder at matched width, the usual evidence that self-supervised pretraining worked, large and significant and replicated and wrong, twice. It is not a subtle failure. An encoder trained to predict masked parts of its input gets better at representing that input, and any target with a component the input can compute will pay it for exactly that, without a bit of new information having been learned.</p>
+
+    <p>Three times in this post something looked like a result and was not: a diagnostic that moved with nothing downstream, a metric that was mostly reconstruction, and a correlation we briefly believed we had found. Each survived until a control was run that took about a minute. We are less worried about the ones we caught than about the rate, which is roughly one per experiment, and about the fact that in every case the control was cheap and obvious in hindsight and still had to be argued for.</p>
 
     <p>None of this came from a new idea. It came from varying a readout we had never varied, matching control widths we had never matched, decomposing a mean we had quoted for a month, and checking whether a regulariser we had dismissed was ever running. Attack your instruments before you trust them. Then check what they predict, because an instrument can be perfectly sound and still measure nothing you care about.</p>
 
     <p class="coda">Every number here is reproducible from
       <a href="https://github.com/physicalreasoning/causal-jepa">physicalreasoning/causal-jepa</a>,
       which carries the code, the raw results and the full findings record, including the
-      corrections and the two pre-registered gates we got wrong.</p>
+      corrections and the four pre-registered gates we got wrong.</p>
   </article>
 
   <footer>&copy; 2026 Physical Reasoning</footer>
