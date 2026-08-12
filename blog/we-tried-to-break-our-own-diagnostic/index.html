@@ -153,16 +153,24 @@
       <figcaption>fig. 3: on the simulator, learned representation versus raw features against observation-noise multiplier. the gap widens as the data degrades</figcaption>
     </figure>
 
-    <p>Across a thirty-two-fold range of quote noise the advantage never crosses zero and more than doubles, from +0.0690 to +0.1502. Raw features fall apart, +0.8239 to +0.6734, while the learned representation barely moves, +0.8928 to +0.8237. Where there is hidden state to recover, this class of model recovers it and keeps recovering it long after the raw cross-section has stopped being usable. Our target set simply had none in it.</p>
+    <p>Across a thirty-two-fold range of quote noise the advantage never crosses zero and more than doubles, from +0.0690 to +0.1502. Raw features fall apart, +0.8239 to +0.6734, while the learned representation barely moves, +0.8928 to +0.8237. Where there is hidden state to recover, this class of model recovers it and keeps recovering it long after the raw cross-section has stopped being usable. Our target set had none in it. For a while that looked like the whole explanation.</p>
 
-    <p>We are stopping here rather than reaching for a bigger model, because the experiments that would have justified one came back negative. What would restart this is not more parameters or more steps, it is a target with something in it: realised volatility over a future window, or the settlement of a different correlated market.</p>
+    <p>We are stopping here rather than reaching for a bigger model, because the experiments that would have justified one came back negative. What would restart this, we wrote at the time, is not more parameters or more steps but a target with something in it: realised volatility over a future window, or the settlement of a different correlated market. We have since run both, and neither did.</p>
+
+    <p>Volatility gave us the clearest training signal the project ever produced. We built targets that divide the market's own forecast out of what actually happened, checked before training that raw features left room on them, and measured 7.7 pooled standard deviations over an untrained encoder at matched width, replicated at a second horizon. Then we subtracted what raw features already explain and probed the remainder. Nothing survived: no arm predicted it better than its own mean. The lift was the encoder getting better at representing its input, on a target that still had an input-derivable half to pay it for doing so.</p>
+
+    <p>The correlated market turned out to be sitting in our own cache. Bitcoin and Ethereum hourly events run side by side, and the correlation realised between them is genuinely joint, because a ladder prices where <em>one</em> asset lands and the dependence between two is in neither ladder at any strike. That one is real, and it is the only clean positive result in the whole programme. Raw features recover it at +0.3693 from both ladders against +0.2629 from a single ladder duplicated to the same width; the gain grows with horizon, and targets that should not need two assets show none of it. It took a minute of ridge regression and no model at all.</p>
+
+    <p>The model lost on it anyway, by 6.6 pooled standard deviations, and its largest lift yet dissolved under the same control. On the remainder, an untrained encoder scored <em>higher</em> than every trained one.</p>
+
+    <p>Which leaves the lift over an untrained encoder at matched width, the usual evidence that self-supervised pretraining worked, large and significant and replicated and wrong, twice. It is not a subtle failure. An encoder trained to predict masked parts of its input gets better at representing that input, and any target with a component the input can compute will pay it for exactly that, without a bit of new information having been learned.</p>
 
     <p>None of this came from a new idea. It came from varying a readout we had never varied, matching control widths we had never matched, decomposing a mean we had quoted for a month, and checking whether a regulariser we had dismissed was ever running. Attack your instruments before you trust them. Then check what they predict, because an instrument can be perfectly sound and still measure nothing you care about.</p>
 
     <p class="coda">Every number here is reproducible from
       <a href="https://github.com/physicalreasoning/causal-jepa">physicalreasoning/causal-jepa</a>,
       which carries the code, the raw results and the full findings record, including the
-      corrections and the two pre-registered gates we got wrong.</p>
+      corrections and the four pre-registered gates we got wrong.</p>
   </article>
 
   <footer>&copy; 2026 Physical Reasoning</footer>
