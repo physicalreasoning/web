@@ -83,6 +83,19 @@
     color: var(--muted);
     margin-top: 0.6rem;
   }
+  .coda {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    line-height: 1.7;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+    border-top: 1px solid var(--rule);
+    margin-top: 2.6rem;
+    padding-top: 1.2rem;
+  }
+  .coda a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
+  .coda a:hover { border-bottom-color: var(--ink); }
+  .coda a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
   footer {
     border-top: 1px solid var(--rule);
     padding: 2rem 0 3rem;
@@ -145,6 +158,11 @@
     <p>We are stopping here rather than reaching for a bigger model, because the experiments that would have justified one came back negative. What would restart this is not more parameters or more steps, it is a target with something in it: realised volatility over a future window, or the settlement of a different correlated market.</p>
 
     <p>None of this came from a new idea. It came from varying a readout we had never varied, matching control widths we had never matched, decomposing a mean we had quoted for a month, and checking whether a regulariser we had dismissed was ever running. Attack your instruments before you trust them. Then check what they predict, because an instrument can be perfectly sound and still measure nothing you care about.</p>
+
+    <p class="coda">Every number here is reproducible from
+      <a href="https://github.com/physicalreasoning/causal-jepa">physicalreasoning/causal-jepa</a>,
+      which carries the code, the raw results and the full findings record, including the
+      corrections and the two pre-registered gates we got wrong.</p>
   </article>
 
   <footer>&copy; 2026 Physical Reasoning</footer>
