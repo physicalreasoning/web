@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="color-scheme" content="light only">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Physical Reasoning builds the training data and infrastructure that accelerate world models across robotics, self-driving, prediction markets, and the sciences, removing the biggest bottleneck to deploying them in the real world.">
+<meta name="description" content="Physical Reasoning is an open source research collective building an open science of world models: how well they predict the real world, whether they obey physics, and what they represent. Research is conducted in public and every result is published.">
 <meta property="og:title" content="Physical Reasoning">
-<meta property="og:description" content="Physical Reasoning builds the training data and infrastructure that accelerate world models across robotics, self-driving, prediction markets, and the sciences, removing the biggest bottleneck to deploying them in the real world.">
+<meta property="og:description" content="Physical Reasoning is an open source research collective building an open science of world models: how well they predict the real world, whether they obey physics, and what they represent. Research is conducted in public and every result is published.">
 <meta property="og:url" content="https://physicalreasoning.ai/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://physicalreasoning.ai/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://physicalreasoning.ai/">
 <link rel="icon" type="image/svg+xml" href="/logo.svg">
-<title>Physical Reasoning · AI Research Lab for World Models and Spatial Intelligence</title>
+<title>Physical Reasoning · An Open Science of World Models</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -46,10 +46,10 @@
     font-size: 0.72rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--ink);
     text-decoration: none;
   }
-  .join-link:hover { color: var(--ink); }
+  .join-link:hover { color: var(--muted); }
   .join-link:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
   .wordmark {
     font-family: var(--mono);
@@ -68,20 +68,45 @@
     text-wrap: balance;
   }
   .hero p { margin-top: 1.4rem; color: var(--muted); }
-  .hero-links { display: flex; gap: 2rem; margin-top: 1.8rem; flex-wrap: wrap; }
+  .hero p + p { margin-top: 1rem; }
 
-  .about {
+  .section {
     border-top: 1px solid var(--rule);
     padding: 2.6rem 0;
   }
-  .about p { color: var(--muted); margin-bottom: 1.1rem; }
-  .about p:last-of-type { margin-bottom: 0; }
-
-  .waitlist {
-    border-top: 1px solid var(--rule);
-    padding: 2.6rem 0 3rem;
+  .section p { color: var(--muted); margin-bottom: 1.1rem; }
+  .section p:last-child { margin-bottom: 0; }
+  .directions {
+    list-style: none;
+    padding-left: 0;
+    counter-reset: dir;
   }
-  .research-link, .waitlist-link {
+  .directions li {
+    counter-increment: dir;
+    position: relative;
+    padding-left: 2.8rem;
+    margin-bottom: 1.8rem;
+  }
+  .directions li:last-child { margin-bottom: 0; }
+  .directions li::before {
+    content: "0" counter(dir);
+    position: absolute;
+    left: 0;
+    top: 0.38rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+  .directions h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 0.35rem;
+  }
+  .directions p { margin-bottom: 0; }
+
+  .research-link {
     display: inline-block;
     font-family: var(--mono);
     font-size: 0.75rem;
@@ -93,10 +118,79 @@
     padding-bottom: 2px;
   }
   .research-link { margin-top: 2.4rem; }
-  .research-link:hover, .waitlist-link:hover { color: var(--muted); border-color: var(--muted); }
-  .research-link:focus-visible, .waitlist-link:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  .research-link:hover { color: var(--muted); border-color: var(--muted); }
+  .research-link:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  .partners {
+    border-top: 1px solid var(--rule);
+    padding: 2.5rem 0;
+  }
+  .partners h2, .section h2 {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 400;
+    margin-bottom: 1.1rem;
+  }
+  .partners ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2.6rem 1.5rem;
+    justify-items: center;
+    padding: 1rem 0;
+  }
+  .partners a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--muted);
+    opacity: 0.55;
+    transition: opacity 120ms;
+  }
+  .partners a:hover { opacity: 1; }
+  .partners a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  .partners ul.founders { grid-template-columns: repeat(3, 1fr); }
+  .partners .compute-h { margin-top: 1.6rem; }
+  .partners img {
+    display: block;
+    object-fit: contain;
+    filter: grayscale(1);
+  }
+  .partners svg {
+    display: block;
+    fill: currentColor;
+  }
+  .partners a[title="DRW"] img { mix-blend-mode: multiply; }
+  .partners a[title="Mercor"] svg { filter: grayscale(1); }
+  .partners a[title="Ramp"] img { mix-blend-mode: multiply; }
+  .partners a[title="OpenAI"] > * { width: 25.2px; height: 25.0px; }
+  .partners a[title="Nvidia"] > * { width: 31.7px; height: 21.4px; }
+  .partners a[title="Meta AI"] > * { width: 25.0px; height: 25.0px; }
+  .partners a[title="Ramp"] > * { width: 64.4px; height: 17.1px; }
+  .partners a[title="Mercor"] > * { width: 25.7px; height: 22.5px; }
+  .partners a[title="DRW"] > * { width: 23.4px; height: 23.4px; }
+  .partners a[title="Stanford"] > * { width: 68.4px; height: 16.4px; }
+  .partners a[title="Instacart"] > * { width: 21.8px; height: 24.2px; }
+  .partners a[title="Anthropic"] > * { width: 31.2px; height: 22.4px; }
+  .partners a[title="Y Combinator"] > * { width: 21.9px; height: 21.9px; }
+  .partners a[title="Google"] > * { width: 24.2px; height: 24.8px; }
+  .partners a[title="Cursor"] > * { width: 20.7px; height: 23.5px; }
+  .partners a[title="xAI"] > * { width: 22.0px; height: 24.1px; }
+  .partners a[title="AWS"] > * { width: 35.5px; height: 21.8px; }
+  .partners a[title="Azure"] > * { width: 24.6px; height: 23.2px; }
+  .partners a[title="Tesla Autopilot"] { font-size: 1.05rem; letter-spacing: 0.04em; }
+  @media (prefers-reduced-motion: reduce) { .partners a { transition: none; } }
   @media (max-width: 560px) {
     .hero { padding: 3rem 0 2.5rem; }
+    .partners ul { grid-template-columns: repeat(2, 1fr); gap: 2rem 1rem; }
+    .partners ul.founders { grid-template-columns: repeat(3, 1fr); }
   }
 
   footer {
@@ -108,7 +202,7 @@
     color: var(--muted);
   }
 </style>
-<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Organization", "name": "Physical Reasoning", "alternateName": ["Physical Reasoning AI", "physicalreasoning.ai"], "url": "https://physicalreasoning.ai/", "logo": "https://physicalreasoning.ai/og.png", "email": "contact@physicalreasoning.ai", "description": "Physical Reasoning builds the training data and infrastructure that accelerate world models across robotics, self-driving, prediction markets, and the sciences."}, {"@context": "https://schema.org", "@type": "WebSite", "name": "Physical Reasoning", "url": "https://physicalreasoning.ai/"}]</script>
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Organization", "name": "Physical Reasoning", "alternateName": ["Physical Reasoning AI", "physicalreasoning.ai"], "url": "https://physicalreasoning.ai/", "logo": "https://physicalreasoning.ai/og.png", "email": "contact@physicalreasoning.ai", "description": "Physical Reasoning is an open source research collective building an open science of world models."}, {"@context": "https://schema.org", "@type": "WebSite", "name": "Physical Reasoning", "url": "https://physicalreasoning.ai/"}]</script>
 </head>
 <body>
 <div class="wrap">
@@ -118,18 +212,58 @@
   </nav>
 
   <header class="hero">
-    <h1>Most of reality is never written down. We build the data and infrastructure that teaches world models what happens next.</h1>
-    <p>Physical Reasoning accelerates the development of world models across robotics, self-driving, prediction markets, and the sciences. By providing the training data and infrastructure these models need, we remove the biggest bottleneck to deploying world models in the real world.</p>
+    <h1>Most of reality is never written down. We are building an open science of world models.</h1>
+    <p>Physical Reasoning is an open source research collective studying world models: systems that learn the dynamics of the physical world and predict what happens next. We work across robotics, self-driving, prediction markets, and the sciences.</p>
     <a class="research-link" href="/blog/">Read our blog &rarr;</a>
   </header>
 
-  <section class="about">
-    <p>World models are fast becoming the backbone of robotics, self-driving, and prediction markets, systems that have to simulate what happens next before they act.</p>
-    <p>As with large language models, data and infrastructure are the primary bottleneck to putting world models to work. The technology is still in early adoption, and there isn't much data built for it yet. We provide both: the training data these models learn from, and the infrastructure to run them at scale.</p>
+  <section class="section">
+    <p>The field is early. Almost all serious work happens inside a handful of companies, evaluated privately against private data. There is no shared, rigorous way to establish whether a model understands the world it renders or merely reproduces its surface.</p>
+    <p>The physics of the world should be open. We conduct our research in public, and every result is published, including negative ones, together with the code to reproduce it.</p>
   </section>
 
-  <section class="waitlist" id="waitlist">
-    <a class="waitlist-link" href="mailto:contact@physicalreasoning.ai?subject=Waitlist%20request">Join the waitlist &rarr;</a>
+  <section class="partners">
+    <h2>Researchers, builders, and leaders from</h2>
+    <ul class="founders">
+      <li><a href="https://openai.com" title="OpenAI" aria-label="OpenAI"><svg aria-hidden="true" viewBox="-0.480 -0.480 24.960 24.747" xmlns="http://www.w3.org/2000/svg"><title>OpenAI</title><path d="M9.205 8.658v-2.26c0-.19.072-.333.238-.428l4.543-2.616c.619-.357 1.356-.523 2.117-.523 2.854 0 4.662 2.212 4.662 4.566 0 .167 0 .357-.024.547l-4.71-2.759a.797.797 0 00-.856 0l-5.97 3.473zm10.609 8.8V12.06c0-.333-.143-.57-.429-.737l-5.97-3.473 1.95-1.118a.433.433 0 01.476 0l4.543 2.617c1.309.76 2.189 2.378 2.189 3.948 0 1.808-1.07 3.473-2.76 4.163zM7.802 12.703l-1.95-1.142c-.167-.095-.239-.238-.239-.428V5.899c0-2.545 1.95-4.472 4.591-4.472 1 0 1.927.333 2.712.928L8.23 5.067c-.285.166-.428.404-.428.737v6.898zM12 15.128l-2.795-1.57v-3.33L12 8.658l2.795 1.57v3.33L12 15.128zm1.796 7.23c-1 0-1.927-.332-2.712-.927l4.686-2.712c.285-.166.428-.404.428-.737v-6.898l1.974 1.142c.167.095.238.238.238.428v5.233c0 2.545-1.974 4.472-4.614 4.472zm-5.637-5.303l-4.544-2.617c-1.308-.761-2.188-2.378-2.188-3.948A4.482 4.482 0 014.21 6.327v5.423c0 .333.143.571.428.738l5.947 3.449-1.95 1.118a.432.432 0 01-.476 0zm-.262 3.9c-2.688 0-4.662-2.021-4.662-4.519 0-.19.024-.38.047-.57l4.686 2.71c.286.167.571.167.856 0l5.97-3.448v2.26c0 .19-.07.333-.237.428l-4.543 2.616c-.619.357-1.356.523-2.117.523zm5.899 2.83a5.947 5.947 0 005.827-4.756C22.287 18.339 24 15.84 24 13.296c0-1.665-.713-3.282-1.998-4.448.119-.5.19-.999.19-1.498 0-3.401-2.759-5.947-5.946-5.947-.642 0-1.26.095-1.88.31A5.962 5.962 0 0010.205 0a5.947 5.947 0 00-5.827 4.757C1.713 5.447 0 7.945 0 10.49c0 1.666.713 3.283 1.998 4.448-.119.5-.19 1-.19 1.499 0 3.401 2.759 5.946 5.946 5.946.642 0 1.26-.095 1.88-.309a5.96 5.96 0 004.162 1.713z"></path></svg></a></li>
+      <li><a href="https://www.tesla.com/autopilot" title="Tesla Autopilot">TESLA AP</a></li>
+      <li><a href="https://www.nvidia.com" title="Nvidia" aria-label="NVIDIA"><svg aria-hidden="true" viewBox="-0.480 3.583 24.960 16.834" xmlns="http://www.w3.org/2000/svg"><title>NVIDIA</title><path d="M8.948 8.798v-1.43a6.7 6.7 0 0 1 .424-.018c3.922-.124 6.493 3.374 6.493 3.374s-2.774 3.851-5.75 3.851c-.398 0-.787-.062-1.158-.185v-4.346c1.528.185 1.837.857 2.747 2.385l2.04-1.714s-1.492-1.952-4-1.952a6.016 6.016 0 0 0-.796.035m0-4.735v2.138l.424-.027c5.45-.185 9.01 4.47 9.01 4.47s-4.08 4.964-8.33 4.964c-.37 0-.733-.035-1.095-.097v1.325c.3.035.61.062.91.062 3.957 0 6.82-2.023 9.593-4.408.459.371 2.34 1.263 2.73 1.652-2.633 2.208-8.772 3.984-12.253 3.984-.335 0-.653-.018-.971-.053v1.864H24V4.063zm0 10.326v1.131c-3.657-.654-4.673-4.46-4.673-4.46s1.758-1.944 4.673-2.262v1.237H8.94c-1.528-.186-2.73 1.245-2.73 1.245s.68 2.412 2.739 3.11M2.456 10.9s2.164-3.197 6.5-3.533V6.201C4.153 6.59 0 10.653 0 10.653s2.35 6.802 8.948 7.42v-1.237c-4.84-.6-6.492-5.936-6.492-5.936z"/></svg></a></li>
+      <li><a href="https://ai.meta.com" title="Meta AI" aria-label="Meta AI"><svg aria-hidden="true" viewBox="-0.480 -0.448 24.960 24.897" xmlns="http://www.w3.org/2000/svg"><title>Meta AI</title><path d="M10.73.032c-1.333 0-2.032 1.016-2.032 2.285 0 2.223 2.127 4.953 4.318 4.953 1.301 0 2-.953 2-2.254 0-2.254-2.095-4.984-4.286-4.984m8.413 2.984c-1.968 0-3.397 2.73-3.397 4.825 0 1.556.794 3.016 2.254 3.016 2 0 3.365-2.762 3.365-4.794 0-1.523-.762-3.047-2.222-3.047M4.857 4.159c-1.968 0-3.778 1.016-3.778 2.54 0 1.65 2.16 2.793 4.254 2.793 1.873 0 3.778-.92 3.778-2.508 0-1.682-2.159-2.825-4.254-2.825m-.222 6.476C2.413 10.635 0 13.175 0 15.397c0 1.301.825 2.159 2.095 2.159 2.19 0 4.603-2.508 4.603-4.794 0-1.27-.761-2.127-2.063-2.127m16.667.698c-2.223 0-5.016 1.62-5.016 3.651 0 1.238 1.047 2.19 2.698 2.19 2.159 0 5.016-1.587 5.016-3.682 0-1.302-1.08-2.159-2.698-2.159M7.619 16c-1.524 0-2.38 1.746-2.38 3.429 0 2.063 1.269 4.54 3.047 4.54 1.524 0 2.38-1.81 2.38-3.461C10.667 18.57 9.46 16 7.62 16m6.571 1.016c-1.333 0-2.476.667-2.476 2.032 0 2.095 2.667 4.063 4.92 4.063 1.366 0 2.54-.73 2.54-2.063 0-2.032-2.698-4.032-4.984-4.032"/></svg></a></li>
+      <li><a href="https://ramp.com" title="Ramp" aria-label="Ramp"><img src="data:image/png;base64,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" alt=""></a></li>
+      <li><a href="https://mercor.com" title="Mercor" aria-label="Mercor"><svg aria-hidden="true" viewBox="177.459 215.969 424.882 372.588" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="SVGZzGBExvr" x1="229.82" x2="229.82" y1="553.68" y2="230.96" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#8d91fe"/><stop offset="1" stop-color="#5348f6"/></linearGradient><linearGradient id="SVGDG89nbwv" x1="247.15" x2="379.3" y1="222.23" y2="492.08" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#8d92fa"/><stop offset="1" stop-color="#5348f6"/></linearGradient><linearGradient id="SVGdRnK7skN" x1="369.73" x2="512.61" y1="524.59" y2="277.1" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#8d92fa"/><stop offset="1" stop-color="#5348f6"/></linearGradient><linearGradient id="SVGKPQU9NZG" x1="527.94" x2="527.94" y1="224.14" y2="580.39" href="#SVGZzGBExvr"/></defs><path fill="url(#SVGZzGBExvr)" d="m265.27 552.05l-59.06 26.09c-9.69 4.28-20.58-2.81-20.58-13.41V303.81c0-30.76 17.73-60.58 45.21-72.72c0 0 43.17-18.95 43.17 9.82L269.39 354l4.62 184.64c0 5.8-3.43 11.06-8.73 13.41Z"/><path fill="url(#SVGDG89nbwv)" d="M201.59 255.25c3.62-2.72 8.76-.07 12.19 2.9c14.82 12.81 23.31 31.27 31.05 49.26c13.57 31.56 26.38 64.38 38.12 97.02c10.67 29.66 20.88 60.24 40.33 85.53c19.89 25.85 53.16 37.77 85.23 31.18c11.91-2.45 24.66-8.85 27.82-20.59c1.71-6.36.24-13.14-1.82-19.4c-5.74-17.43-15.93-33.12-27.81-47.1c-4.99-5.88-10.32-11.53-14.4-18.07c-3.2-5.11-5.58-10.69-7.92-16.25c-9.78-23.23-19.08-46.66-27.89-70.27c-7.71-20.67-15.14-41.68-27.01-60.29c-11.86-18.6-28.81-34.89-49.9-41.37c-28.21-8.67-61.43 3.01-77.99 27.44Z"/><path fill="url(#SVGdRnK7skN)" d="M573.99 253.14s-14.66.98-37.48 53.95c-7.1 16.49-12.99 38.48-23.57 66.77s-23.95 66.88-36.89 87.99c-30.07 49.04-65.06 74.14-114.56 56.46c-20.33-7.26-31.97-20.84-31.97-20.84c3.82 1.86 44.06-48.9 48.1-55.18c19.54-30.43 33.35-64.03 45.46-97.98c6.25-17.53 12.53-35.88 18.39-53.86c4.9-15.06 9.61-32.29 19.62-43.69c.21-.24.45-.45.68-.66c14.03-13.12 32.62-21.13 58.74-21.42c32.04-.36 53.49 28.46 53.49 28.46Z"/><path fill="url(#SVGKPQU9NZG)" d="m514.53 556.07l59.06 23.05c9.69 4.28 20.58-2.81 20.58-13.41V325.39c0-60.76-29.08-95.41-64.39-100.31c-22.6-3.14-50.3 1.03-68.02 21.02c-2.03 2.29 46.45-3.93 46.15 139.01c-.08 39.39-2.12 157.55-2.12 157.55c0 5.8 3.43 11.06 8.73 13.41Z"/></svg></a></li>
+      <li><a href="https://drw.com" title="DRW" aria-label="DRW"><img src="data:image/png;base64,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" alt=""></a></li>
+      <li><a href="https://www.stanford.edu" title="Stanford" aria-label="Stanford"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="-3.539 -3.541 184.038 44.150"><path d="M46.72,36.87c-6.32,0-6.8-4.77-6.8-6.25a6.2,6.2,0,0,1,4.47-6.25c4.15-1.53,5-1.7,7.9-2.6V21A6.67,6.67,0,0,0,52,18.44a4.19,4.19,0,0,0-4.26-2.67A5.1,5.1,0,0,0,43,18.66L41.88,18c.74-2.63,3.39-5.25,8-5.25,3.25,0,5.37.92,6.66,2.9,1,1.57,1.08,3.76,1.08,6,0,2-.06,4.23-.1,6,0,1.24-.06,2.31-.06,3,0,1.63.26,2.91,1.63,2.91.56,0,.67-.15,1.16-.54l.75.87c-1.23,1.6-2.58,2.93-4.86,2.93a3.38,3.38,0,0,1-3.55-2.36A7.86,7.86,0,0,1,46.72,36.87Zm5.57-12.23a25.7,25.7,0,0,0-5.1,1.94,3.84,3.84,0,0,0-2,3.65c0,1.26.45,3.37,3.47,3.37a6.32,6.32,0,0,0,3.67-1.08ZM.17,35.61c0-2.34,0-4.32-.17-6.72H1.38A5,5,0,0,0,2.46,32.2C3.44,33.31,5.72,34,7.85,34c4.43,0,6.49-1.68,6.49-5.28,0-3.09-1.91-4.37-4.55-6.15l-.41-.29L6.6,20.41C2.73,17.85.75,15.79.75,11.69c0-2,.77-8.55,10.51-8.55a48.58,48.58,0,0,1,7.64.62c0,.31-.05,1.81-.05,3.07,0,1.46,0,1.95.06,3.74H17.73a4.52,4.52,0,0,0-1.15-3.27c-.94-.93-3-1.37-5.21-1.37-5.17,0-5.77,2.65-5.77,4.64,0,2.75,1.4,3.67,4.46,5.7l3.54,2.33c3,2,5.83,3.9,5.83,8.88,0,8.44-7.86,9.34-11.24,9.34A24.27,24.27,0,0,1,.17,35.61ZM63,14.28a20.88,20.88,0,0,0,4.7-.33,8.92,8.92,0,0,0,3.1-1l.46.27v1.85A11.44,11.44,0,0,1,78,12.82c4.19,0,6.93,2,7.7,5.52a24.24,24.24,0,0,1,.31,4.16v6.79c0,3.84.15,4.91.87,5.6a3.68,3.68,0,0,0,2.26.67v1.09c-1.5-.07-4.15-.23-5.75-.23-2.13,0-4.53.1-5.83.25V35.6a4,4,0,0,0,2.35-.85c.67-.68.79-2,.89-4.91,0-.86.05-2.69.05-4a47.76,47.76,0,0,0-.2-5.32c-.35-3-1.93-4.41-4.93-4.41a9.07,9.07,0,0,0-4.36,1V29.29c0,3.84.15,4.91.89,5.6a3.68,3.68,0,0,0,2.24.67v1.09c-1.93-.1-4.24-.23-5.72-.23a46,46,0,0,0-5.86.25V35.56a3.46,3.46,0,0,0,2.53-1c.71-.8.75-2.79.75-6.74V21.18c0-2.88-.05-4.1-.46-4.72s-1.12-.87-2.72-.85ZM91.95,35.54a3.41,3.41,0,0,0,2.53-1c.72-.8.76-2.77.76-6.73V16.29h-3V15a12.91,12.91,0,0,0,3-1.57,40.79,40.79,0,0,1,.35-6.17C96.48,2.45,99.64,0,104.91,0a9.34,9.34,0,0,1,5.87,1.93l.08.49-2.31,3.2H108c-.79-1.93-2-3-4.05-3a3.51,3.51,0,0,0-2.34.83c-1,1-1.17,2.5-1.17,5.47V13.4h5.19v2.89H100.4V29.19c0,3.06.11,4.56.51,5.17.65,1,2.69,1.09,3.7,1.05v1.23c-1.71-.1-4.36-.23-6.35-.23a59.41,59.41,0,0,0-6.32.25Zm26.77,1.53c-7.1,0-11.35-4.43-11.35-11.83,0-5.76,3.1-12.47,11.84-12.47,7.1,0,11.33,4.41,11.33,11.83C130.54,30.34,127.44,37.07,118.71,37.07Zm.3-21.61a4.93,4.93,0,0,0-3.31,1.06c-1.86,1.57-2.81,4.41-2.81,8.47,0,1.57.29,9.39,6,9.39a4.86,4.86,0,0,0,3.28-1.05c1.88-1.57,2.82-4.42,2.82-8.49C125,23.28,124.72,15.46,119,15.46Zm13.87-1.27a22.34,22.34,0,0,0,5.09-.42,11.46,11.46,0,0,0,2.76-.78l.42.21v2a7.7,7.7,0,0,1,5.37-2.16,5.58,5.58,0,0,1,4.05,1.44v.73l-2,3.59h-1a4.16,4.16,0,0,0-3.87-2.1,4.39,4.39,0,0,0-2.55.73V29.19c0,3.06.1,4.51.5,5.12.65,1,2.58,1.08,3.69,1v1.29c-1.6-.09-4.35-.23-6.33-.23a58.86,58.86,0,0,0-6.32.25V35.49a3.32,3.32,0,0,0,2.53-1c.72-.81.76-2.72.76-6.68V21.18c0-2.88,0-4.12-.46-4.72s-1.23-.83-2.73-.85ZM165.62,1.35A34.34,34.34,0,0,0,171.09.7a14.56,14.56,0,0,0,2.53-.62l.41.23c-.2,1.92-.2,6.25-.2,9.31v19c0,2.83,0,4.58.45,5.15s1.22.88,2.68.88v1.25a32.25,32.25,0,0,0-5,.48,10,10,0,0,0-2.58.63l-.63-.21v-2a11,11,0,0,1-6.5,2.19c-6.39,0-10.51-4.43-10.51-11.29A15.62,15.62,0,0,1,153,19.45c2-4.22,6-6.64,11.12-6.64a23,23,0,0,1,4.54.44V8.31c0-2.9,0-4.45-.47-5.07s-.8-.71-2.55-.83Zm-.81,32.33a6.84,6.84,0,0,0,3.82-.94V17.16A6.5,6.5,0,0,0,164,15.6c-4.53,0-6.73,3.1-6.73,9.48C157.26,27.76,158.06,33.68,164.81,33.68Zm-127.22.66A7.69,7.69,0,0,1,31.29,37c-3.6,0-5.6-1.28-6.48-4.16a20.09,20.09,0,0,1-.36-4.74c0-3.72,0-6.71.08-10.16V16.32H21.46v-.91a11.18,11.18,0,0,0,2.91-1.61,17.16,17.16,0,0,0,4.33-5.6h1v5.23h7.9v2.89h-7.9V28.53c0,3.65.66,5.73,4.11,5.73a6.78,6.78,0,0,0,3.34-.88Z"/></svg></a></li>
+      <li><a href="https://www.instacart.com" title="Instacart" aria-label="Instacart"><svg aria-hidden="true" viewBox="0.768 -0.480 22.464 24.960" xmlns="http://www.w3.org/2000/svg"><title>Instacart</title><path d="M15.629 9.619c1.421 1.429 2.58 3.766 1.917 5.152-1.778 3.715-15.04 10.226-16.169 9.1C.252 22.746 6.768 9.476 10.481 7.697c1.388-.66 3.724.51 5.152 1.92l-.005.014v-.012zm7.028-1.566c-.231-.855-.821-1.717-1.7-1.82-1.61-.186-4.151 2.663-3.971 3.339.181.69 3.766 1.875 5.1.915.691-.494.781-1.56.556-2.414l.015-.02zM17.666.158c1.198.324 2.407 1.148 2.551 2.382.261 2.259-3.732 5.819-4.68 5.564-.948-.251-2.618-5.284-1.269-7.162.695-.972 2.201-1.106 3.399-.788v.004h-.001z"/></svg></a></li>
+    </ul>
+    <h2 class="compute-h">Supported with compute from</h2>
+    <ul class="compute">
+      <li><a href="https://www.anthropic.com" title="Anthropic" aria-label="Anthropic"><svg aria-hidden="true" viewBox="-0.480 3.061 24.960 17.878" xmlns="http://www.w3.org/2000/svg"><title>Anthropic</title><path d="M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.5409Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z"/></svg></a></li>
+      <li><a href="https://www.ycombinator.com" title="Y Combinator" aria-label="Y Combinator"><svg aria-hidden="true" viewBox="-0.480 -0.480 24.960 24.960" xmlns="http://www.w3.org/2000/svg"><title>Y Combinator</title><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-2.457 4.875c-.372.745-.688 1.434-.688 1.434s-.297-.708-.651-1.434L8.831 5.896h-1.88z"/></svg></a></li>
+      <li><a href="https://www.google.com" title="Google" aria-label="Google"><svg aria-hidden="true" viewBox="-0.173 -0.480 24.346 24.960" xmlns="http://www.w3.org/2000/svg"><title>Google</title><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg></a></li>
+      <li><a href="https://openai.com" title="OpenAI" aria-label="OpenAI"><svg aria-hidden="true" viewBox="-0.480 -0.480 24.960 24.747" xmlns="http://www.w3.org/2000/svg"><title>OpenAI</title><path d="M9.205 8.658v-2.26c0-.19.072-.333.238-.428l4.543-2.616c.619-.357 1.356-.523 2.117-.523 2.854 0 4.662 2.212 4.662 4.566 0 .167 0 .357-.024.547l-4.71-2.759a.797.797 0 00-.856 0l-5.97 3.473zm10.609 8.8V12.06c0-.333-.143-.57-.429-.737l-5.97-3.473 1.95-1.118a.433.433 0 01.476 0l4.543 2.617c1.309.76 2.189 2.378 2.189 3.948 0 1.808-1.07 3.473-2.76 4.163zM7.802 12.703l-1.95-1.142c-.167-.095-.239-.238-.239-.428V5.899c0-2.545 1.95-4.472 4.591-4.472 1 0 1.927.333 2.712.928L8.23 5.067c-.285.166-.428.404-.428.737v6.898zM12 15.128l-2.795-1.57v-3.33L12 8.658l2.795 1.57v3.33L12 15.128zm1.796 7.23c-1 0-1.927-.332-2.712-.927l4.686-2.712c.285-.166.428-.404.428-.737v-6.898l1.974 1.142c.167.095.238.238.238.428v5.233c0 2.545-1.974 4.472-4.614 4.472zm-5.637-5.303l-4.544-2.617c-1.308-.761-2.188-2.378-2.188-3.948A4.482 4.482 0 014.21 6.327v5.423c0 .333.143.571.428.738l5.947 3.449-1.95 1.118a.432.432 0 01-.476 0zm-.262 3.9c-2.688 0-4.662-2.021-4.662-4.519 0-.19.024-.38.047-.57l4.686 2.71c.286.167.571.167.856 0l5.97-3.448v2.26c0 .19-.07.333-.237.428l-4.543 2.616c-.619.357-1.356.523-2.117.523zm5.899 2.83a5.947 5.947 0 005.827-4.756C22.287 18.339 24 15.84 24 13.296c0-1.665-.713-3.282-1.998-4.448.119-.5.19-.999.19-1.498 0-3.401-2.759-5.947-5.946-5.947-.642 0-1.26.095-1.88.31A5.962 5.962 0 0010.205 0a5.947 5.947 0 00-5.827 4.757C1.713 5.447 0 7.945 0 10.49c0 1.666.713 3.283 1.998 4.448-.119.5-.19 1-.19 1.499 0 3.401 2.759 5.946 5.946 5.946.642 0 1.26-.095 1.88-.309a5.96 5.96 0 004.162 1.713z"></path></svg></a></li>
+      <li><a href="https://cursor.com" title="Cursor" aria-label="Cursor"><svg aria-hidden="true" viewBox="0.991 -0.480 22.017 24.960" xmlns="http://www.w3.org/2000/svg"><title>Cursor</title><path d="M11.503.131 1.891 5.678a.84.84 0 0 0-.42.726v11.188c0 .3.162.575.42.724l9.609 5.55a1 1 0 0 0 .998 0l9.61-5.55a.84.84 0 0 0 .42-.724V6.404a.84.84 0 0 0-.42-.726L12.497.131a1.01 1.01 0 0 0-.996 0M2.657 6.338h18.55c.263 0 .43.287.297.515L12.23 22.918c-.062.107-.229.064-.229-.06V12.335a.59.59 0 0 0-.295-.51l-9.11-5.257c-.109-.063-.064-.23.061-.23"/></svg></a></li>
+      <li><a href="https://x.ai" title="xAI" aria-label="xAI"><svg aria-hidden="true" viewBox="1.560 0.560 20.880 22.880" xmlns="http://www.w3.org/2000/svg"><title>Grok</title><path d="M6.469 8.776L16.512 23h-4.464L2.005 8.776H6.47zm-.004 7.9l2.233 3.164L6.467 23H2l4.465-6.324zM22 2.582V23h-3.659V7.764L22 2.582zM22 1l-9.952 14.095-2.233-3.163L17.533 1H22z"></path></svg></a></li>
+      <li><a href="https://aws.amazon.com" title="AWS" aria-label="AWS"><svg aria-hidden="true" viewBox="-0.480 5.520 24.960 15.312" xmlns="http://www.w3.org/2000/svg"><title>AWS</title><path d="M6.763 11.212c0 .296.032.535.088.71.064.176.144.368.256.576.04.063.056.127.056.183 0 .08-.048.16-.152.24l-.503.335a.383.383 0 01-.208.072c-.08 0-.16-.04-.239-.112a2.47 2.47 0 01-.287-.375 6.18 6.18 0 01-.248-.471c-.622.734-1.405 1.101-2.347 1.101-.67 0-1.205-.191-1.596-.574-.39-.384-.59-.894-.59-1.533 0-.678.24-1.23.726-1.644.487-.415 1.133-.623 1.955-.623.272 0 .551.024.846.064.296.04.6.104.918.176v-.583c0-.607-.127-1.03-.375-1.277-.255-.248-.686-.367-1.3-.367-.28 0-.568.031-.863.103-.295.072-.583.16-.862.272-.09.04-.184.075-.28.104a.488.488 0 01-.127.023c-.112 0-.168-.08-.168-.247v-.391c0-.128.016-.224.056-.28a.597.597 0 01.224-.167 4.577 4.577 0 011.005-.36 4.84 4.84 0 011.246-.151c.95 0 1.644.216 2.091.647.44.43.662 1.085.662 1.963v2.586h.016zm-3.24 1.214c.263 0 .534-.048.822-.144a1.78 1.78 0 00.758-.51 1.27 1.27 0 00.272-.512c.047-.191.08-.423.08-.694v-.335a6.66 6.66 0 00-.735-.136 6.02 6.02 0 00-.75-.048c-.535 0-.926.104-1.19.32-.263.215-.39.518-.39.917 0 .375.095.655.295.846.191.2.47.296.838.296zm6.41.862c-.144 0-.24-.024-.304-.08-.064-.048-.12-.16-.168-.311L7.586 6.726a1.398 1.398 0 01-.072-.32c0-.128.064-.2.191-.2h.783c.151 0 .255.025.31.08.065.048.113.16.16.312l1.342 5.284 1.245-5.284c.04-.16.088-.264.151-.312a.549.549 0 01.32-.08h.638c.152 0 .256.025.32.08.063.048.12.16.151.312l1.261 5.348 1.381-5.348c.048-.16.104-.264.16-.312a.52.52 0 01.311-.08h.743c.127 0 .2.065.2.2 0 .04-.009.08-.017.128a1.137 1.137 0 01-.056.2l-1.923 6.17c-.048.16-.104.263-.168.311a.51.51 0 01-.303.08h-.687c-.15 0-.255-.024-.32-.08-.063-.056-.119-.16-.15-.32L12.32 7.747l-1.23 5.14c-.04.16-.087.264-.15.32-.065.056-.177.08-.32.08l-.686.001zm10.256.215c-.415 0-.83-.048-1.229-.143-.399-.096-.71-.2-.918-.32-.128-.071-.215-.151-.247-.223a.563.563 0 01-.048-.224v-.407c0-.167.064-.247.183-.247.048 0 .096.008.144.024.048.016.12.048.2.08.271.12.566.215.878.279.32.064.63.096.95.096.502 0 .894-.088 1.165-.264a.86.86 0 00.415-.758.777.777 0 00-.215-.559c-.144-.151-.416-.287-.807-.415l-1.157-.36c-.583-.183-1.014-.454-1.277-.813a1.902 1.902 0 01-.4-1.158c0-.335.073-.63.216-.886.144-.255.335-.479.575-.654.24-.184.51-.32.83-.415.32-.096.655-.136 1.006-.136.175 0 .36.008.535.032.183.024.35.056.518.088.16.04.312.08.455.127.144.048.256.096.336.144a.69.69 0 01.24.2.43.43 0 01.071.263v.375c0 .168-.064.256-.184.256a.83.83 0 01-.303-.096 3.652 3.652 0 00-1.532-.311c-.455 0-.815.071-1.062.223-.248.152-.375.383-.375.71 0 .224.08.416.24.567.16.152.454.304.877.44l1.134.358c.574.184.99.44 1.237.767.247.327.367.702.367 1.117 0 .343-.072.655-.207.926a2.157 2.157 0 01-.583.703c-.248.2-.543.343-.886.447-.36.111-.734.167-1.142.167z"></path><path d="M.378 15.475c3.384 1.963 7.56 3.153 11.877 3.153 2.914 0 6.114-.607 9.06-1.852.44-.2.814.287.383.607-2.626 1.94-6.442 2.969-9.722 2.969-4.598 0-8.74-1.7-11.87-4.526-.247-.223-.024-.527.272-.351zm23.531-.2c.287.36-.08 2.826-1.485 4.007-.215.184-.423.088-.327-.151l.175-.439c.343-.88.802-2.198.52-2.555-.336-.43-2.22-.207-3.074-.103-.255.032-.295-.192-.063-.36 1.5-1.053 3.967-.75 4.254-.399z"></path></svg></a></li>
+      <li><a href="https://azure.microsoft.com" title="Azure" aria-label="Azure"><svg aria-hidden="true" viewBox="-0.035 0.386 24.506 23.157" xmlns="http://www.w3.org/2000/svg"><title>Azure</title><path d="M18.397 15.296H7.4a.51.51 0 00-.347.882l7.066 6.595c.206.192.477.298.758.298h6.226l-2.706-7.775z" fill-opacity=".75"></path><path d="M8.295.857c-.477 0-.9.304-1.053.756L.495 21.605a1.11 1.11 0 001.052 1.466h5.43c.477 0 .9-.304 1.053-.755l1.341-3.975-2.318-2.163a.51.51 0 01.347-.882h3L15.271.857H8.295z" fill-opacity=".5"></path><path d="M17.193 1.613a1.11 1.11 0 00-1.052-.756h-7.81.035c.477 0 .9.304 1.052.756l6.748 19.992a1.11 1.11 0 01-1.052 1.466h-.12 7.895a1.11 1.11 0 001.052-1.466L17.193 1.613z"></path></svg></a></li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <h2>Research directions</h2>
+    <ol class="directions">
+      <li>
+        <h3>Predictive validity on real-world outcomes</h3>
+        <p>We elicit forecasts on resolved real-world questions as of their open date and score calibration against realized outcomes. Forecast accuracy is a measurable proxy for world model quality.</p>
+      </li>
+      <li>
+        <h3>Physical consistency of generated video</h3>
+        <p>A benchmark built from probe tasks with simulator ground truth for gravity, object permanence, and collision, scored by a model-agnostic harness with a public leaderboard.</p>
+      </li>
+      <li>
+        <h3>Representational content of model internals</h3>
+        <p>Plausible generation is compatible with internals that encode nothing about objects, mass, or velocity. We train probes on model activations to determine what is represented and what is missing.</p>
+      </li>
+    </ol>
   </section>
 
   <footer>© 2026 Physical Reasoning</footer>
