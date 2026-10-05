@@ -237,10 +237,10 @@
     <p>The strategy is now running live in shadow mode. Every day at 4pm local, a scheduled job scores the next day's ladders and commits its paper trades before the outcome exists, so the timestamps are the proof. It carries a decay alarm: a rolling 30-day score against the market that flips to STOP if two windows in a row sit clearly below zero. The model also sits behind a small API with a model card, so you can ask it for the chance Chicago tops 85 tomorrow and get a calibrated number back. What's left is mostly waiting. If the alarm stays quiet for a month, the next step is real execution. If it fires, we'll write that up too.</p>
 
     <p class="coda">Every number here is reproducible from
-      <a href="https://github.com/physicalreasoning/pm-decide">physicalreasoning/pm-decide</a>,
+      <a href="https://github.com/physicalreasoning/isotherm">physicalreasoning/isotherm</a>,
       with the code, raw results and the full findings record, including the bugs we caught and
       the gate we had to amend. The live paper ledger is on the
-      <a href="https://github.com/physicalreasoning/pm-decide/tree/shadow-ledger">shadow-ledger</a> branch.</p>
+      <a href="https://github.com/physicalreasoning/isotherm/tree/shadow-ledger">shadow-ledger</a> branch.</p>
   </article>
 
   <footer>&copy; 2026 Physical Reasoning</footer>
