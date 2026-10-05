@@ -218,6 +218,10 @@
 
     <p>Next we gave the model more to look at on the day itself: five-minute station observations, NBM's forecast for the rest of the afternoon, and a new 2pm read. It helped exactly where you'd expect. At 2pm the model beats the market by 0.017 nats over the last year, its biggest recent gain at any hour of the day. It did not help where it counts. By mid afternoon the order books are thin, and there were only 322 trades worth taking in three years. Resting orders still got picked off too. Pulling our quotes every time a new GFS run lands sounded clever, and the backtest almost never chose it.</p>
 
+    <p>Then came the best looking result of the whole project. Kalshi started listing daily low temperatures in December 2025. Same pipeline, same family of strategies, and the backtest cleared every bar we had set: a deflated Sharpe of 0.98, a probability of backtest overfitting of 0.06, and $13k in seven months. We sealed off September and October before looking, wrote down the rule, and scored it once. It made $36.</p>
+
+    <p>The model's probabilities were still better than the market's on those weeks, by 0.019 nats with an interval clear of zero. The money was gone. The tell was the placebo. In the backtest even random trades made a little money, because a brand new market was badly calibrated. In the sealed weeks random trades lost. The young market had grown up, and our edge had mostly been its growing pains.</p>
+
     <p>We also ran the identical pipeline on MLB game winners, the other end of the liquidity spectrum: 4,484 games, Elo plus starting pitchers, one cent spreads and around a million contracts a game. The best blend landed within 0.001 nats of the market. Nothing there. Efficient markets exist, and that is one of them.</p>
 
     <p>What we'd tell anyone trying this. Score against the market, not against zero. Use proper scoring rules, and train on them too. Keep a control that can only win if your pipeline leaks. Count your trials and deflate your Sharpe. And lock some data away before you start, because you only get to be surprised once.</p>
