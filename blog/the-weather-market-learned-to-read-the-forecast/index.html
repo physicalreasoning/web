@@ -152,7 +152,7 @@
 
     <p>Every day, for every city, Kalshi lists a ladder of 2&deg;F buckets and exactly one of them settles YES. That makes each ladder a small classification problem with a price on every class, which is about the cleanest setup there is for asking whether a model's probabilities beat the crowd's. We pulled every settled ladder back to 2021, about 8,200 city-days and 23,000 ladder snapshots, every trade since mid 2023, 17 million prints, and twelve years of archived NWS forecasts. All of it from free public APIs.</p>
 
-    <p>The model is in the spirit of Jev, TypeSafe's new decision model: you give it a state and a typed question, and it gives back calibrated probabilities instead of text. Ours is called LadderNet. It puts one probability distribution over the outcome and reads every answer off that, so "which bucket wins" and "will it be above 85" can never contradict each other. Under the hood it is small. A learned log pool of the market and the forecasts, plus an MLP correction, an ensemble of five, trained on log loss with recent days weighted more heavily. It starts out identical to the market and only moves away from the crowd where the outcomes pay for it.</p>
+    <p>The model is in the spirit of Jev, TypeSafe's new decision model: you give it a state and a typed question, and it gives back calibrated probabilities instead of text. Ours is called isotherm. It puts one probability distribution over the outcome and reads every answer off that, so "which bucket wins" and "will it be above 85" can never contradict each other. Under the hood it is small. A learned log pool of the market and the forecasts, plus an MLP correction, an ensemble of five, trained on log loss with recent days weighted more heavily. It starts out identical to the market and only moves away from the crowd where the outcomes pay for it.</p>
 
     <p>The evaluation is where most of the work went. Everything is walk-forward. Every forecast is the version that was actually public at the moment of the read, so there is no look-ahead. Every model is refit each quarter on the past only, and the last three months were sealed away until the very end. We score with proper scoring rules (log loss, RPS, Brier), always against the market's own implied probabilities at the same timestamp, never against zero. And there is a control: the same network trained on labels sampled from the market itself. It can only beat the market if the pipeline leaks the answer. It scored within 0.002 nats of the market.</p>
 
@@ -160,10 +160,10 @@
       <canvas id="fig1" role="img" aria-label="Line chart of log loss gain over the market by half year"></canvas>
       <div class="readout" id="fig1-r"></div>
       <figcaption>fig. 1: log loss gain over the market at the 8am read, by half year. above zero means better than the crowd</figcaption>
-      <table class="sr"><tr><th>half</th><th>simple pool</th><th>LadderNet</th></tr><tr><td>2023 H2</td><td>+0.182</td><td>+0.227</td></tr><tr><td>2024 H1</td><td>+0.113</td><td>+0.179</td></tr><tr><td>2024 H2</td><td>+0.089</td><td>+0.098</td></tr><tr><td>2025 H1</td><td>-0.012</td><td>+0.022</td></tr><tr><td>2025 H2</td><td>-0.004</td><td>+0.016</td></tr><tr><td>2026 H1</td><td>-0.021</td><td>+0.006</td></tr></table>
+      <table class="sr"><tr><th>half</th><th>simple pool</th><th>isotherm</th></tr><tr><td>2023 H2</td><td>+0.182</td><td>+0.227</td></tr><tr><td>2024 H1</td><td>+0.113</td><td>+0.179</td></tr><tr><td>2024 H2</td><td>+0.089</td><td>+0.098</td></tr><tr><td>2025 H1</td><td>-0.012</td><td>+0.022</td></tr><tr><td>2025 H2</td><td>-0.004</td><td>+0.016</td></tr><tr><td>2026 H1</td><td>-0.021</td><td>+0.006</td></tr></table>
     </figure>
 
-    <p>First result: there used to be a lot of edge here. In late 2023, blending the market with the free forecast beat the market by 0.18 nats per ladder, which is a huge number for a liquid market. By 2025 the same blend was at zero, then slightly negative. Somebody started reading the forecast. LadderNet holds up better and stays positive in every half year, but it decays too, down to about 0.01.</p>
+    <p>First result: there used to be a lot of edge here. In late 2023, blending the market with the free forecast beat the market by 0.18 nats per ladder, which is a huge number for a liquid market. By 2025 the same blend was at zero, then slightly negative. Somebody started reading the forecast. isotherm holds up better and stays positive in every half year, but it decays too, down to about 0.01.</p>
 
     <p>Second result, and our favourite. The NWS puts out two main public forecast products. NBM is the blend behind the forecast on weather.gov, the one everybody looks at. GFS MOS is older and plainer and mostly lives in text bulletins. Over the last twelve months, adding NBM to the market price makes it worse. Adding GFS MOS still makes it better, at every read time, with confidence intervals clear of zero. The crowd priced in the forecast it could see, and not the one it couldn't.</p>
 
@@ -294,7 +294,7 @@
     function px(i) { return ml + i / (HALF.length - 1) * pw; }
     function ys(v) { return mt + (0.25 - v) / 0.29 * ph; }
     grid(x, ml, pw, ys, [0.2, 0.1, 0], function (g) { return g ? sgn(g, 1) : '0'; });
-    [[POOL, MUTED, 1.4, [4, 3], 'simple pool', false], [NET, INK, 1.8, [], 'LadderNet', true]].forEach(function (s) {
+    [[POOL, MUTED, 1.4, [4, 3], 'simple pool', false], [NET, INK, 1.8, [], 'isotherm', true]].forEach(function (s) {
       x.strokeStyle = s[1]; x.lineWidth = s[2]; x.setLineDash(s[3]);
       x.beginPath();
       s[0].forEach(function (v, i) { var y = ys(v * k); i ? x.lineTo(px(i), y) : x.moveTo(px(i), y); });
@@ -307,7 +307,7 @@
     HALF.forEach(function (l, i) { x.fillText(l, px(i), mt + ph + 8); });
     x.textAlign = 'left'; x.fillText('nats per ladder', ml + 4, mt - 14);
     hover.fig1 = { n: HALF.length, px: px, text: function (i) {
-      return HALF[i] + '  LadderNet ' + sgn(NET[i], 3) + '  pool ' + sgn(POOL[i], 3); } };
+      return HALF[i] + '  isotherm ' + sgn(NET[i], 3) + '  pool ' + sgn(POOL[i], 3); } };
   }
 
   // fig 2: NBM vs GFS, last 12 months
