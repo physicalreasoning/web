@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light only">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="We built a calibrated decision model for Kalshi's daily temperature markets and tested it the way a trading desk would. The edge is real, it passed a sealed out-of-sample test, and it is shrinking every month.">
+<meta property="og:title" content="The weather market learned to read the forecast">
+<meta property="og:description" content="We built a calibrated decision model for Kalshi's daily temperature markets and tested it the way a trading desk would. The edge is real, it passed a sealed out-of-sample test, and it is shrinking every month.">
+<meta property="og:url" content="https://physicalreasoning.ai/blog/the-weather-market-learned-to-read-the-forecast/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://physicalreasoning.ai/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://physicalreasoning.ai/blog/the-weather-market-learned-to-read-the-forecast/">
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<title>The weather market learned to read the forecast · Physical Reasoning</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    color-scheme: light only;
+    --paper: #FFFFFF;
+    --ink: #000000;
+    --muted: #6B6B6B;
+    --rule: #E8E8E8;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  body {
+    font-family: var(--serif);
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.7;
+    font-size: 17px;
+  }
+  .wrap { max-width: 38rem; margin: 0 auto; padding: 0 1.25rem; }
+  nav {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 1.8rem 0;
+  }
+  .wordmark {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .back {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .back:hover { color: var(--ink); }
+  article { padding: 3rem 0 4rem; }
+  @media (max-width: 560px) { article { padding: 2rem 0 3rem; } }
+  .meta {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  article h1 {
+    font-size: clamp(1.45rem, 5vw, 1.9rem);
+    font-weight: 400;
+    line-height: 1.35;
+    text-wrap: balance;
+    margin-bottom: 1.8rem;
+  }
+  article p { margin-bottom: 1.2rem; }
+  article p:first-of-type { font-size: 1.08rem; color: var(--muted); }
+  figure { margin: 2.4rem 0; position: relative; }
+  figure canvas { width: 100%; height: 260px; display: block; }
+  figcaption {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-top: 0.6rem;
+  }
+  .readout {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    color: var(--ink);
+    background: var(--paper);
+    padding: 0 0.2rem;
+    pointer-events: none;
+    font-variant-numeric: tabular-nums;
+  }
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .stats {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.4rem 0 1.6rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .stats td { padding: 0.35rem 0; border-bottom: 1px solid var(--rule); }
+  .stats td:last-child { text-align: right; }
+  .coda {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    line-height: 1.7;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+    border-top: 1px solid var(--rule);
+    margin-top: 2.6rem;
+    padding-top: 1.2rem;
+  }
+  .coda a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
+  .coda a:hover { border-bottom-color: var(--ink); }
+  .coda a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0 3rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+</style>
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "The weather market learned to read the forecast", "description": "We built a calibrated decision model for Kalshi's daily temperature markets and tested it the way a trading desk would. The edge is real, it passed a sealed out-of-sample test, and it is shrinking every month.", "url": "https://physicalreasoning.ai/blog/the-weather-market-learned-to-read-the-forecast/", "datePublished": "2026-10-05", "author": {"@type": "Organization", "name": "Physical Reasoning"}, "publisher": {"@type": "Organization", "name": "Physical Reasoning", "logo": {"@type": "ImageObject", "url": "https://physicalreasoning.ai/og.png"}}, "mainEntityOfPage": "https://physicalreasoning.ai/blog/the-weather-market-learned-to-read-the-forecast/", "image": "https://physicalreasoning.ai/og.png"}]</script>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="wordmark" href="/">[Pr]</a>
+    <a class="back" href="/blog/">&larr; Blog</a>
+  </nav>
+
+  <article>
+    <div class="meta">October 2026 &middot; Research notes</div>
+    <h1>The weather market learned to read the forecast</h1>
+
+    <p>Kalshi lets you trade tomorrow's high temperature in seven US cities. The National Weather Service publishes its forecast for free, hours before most of the trading happens. So does the market actually use it? We spent a few weeks finding out, and the answer changed while we were measuring it.</p>
+
+    <p>Every day, for every city, Kalshi lists a ladder of 2&deg;F buckets and exactly one of them settles YES. That makes each ladder a small classification problem with a price on every class, which is about the cleanest setup there is for asking whether a model's probabilities beat the crowd's. We pulled every settled ladder back to 2021, about 8,200 city-days and 23,000 ladder snapshots, every trade since mid 2023, 17 million prints, and twelve years of archived NWS forecasts. All of it from free public APIs.</p>
+
+    <p>The model is in the spirit of Jev, TypeSafe's new decision model: you give it a state and a typed question, and it gives back calibrated probabilities instead of text. Ours is called LadderNet. It puts one probability distribution over the outcome and reads every answer off that, so "which bucket wins" and "will it be above 85" can never contradict each other. Under the hood it is small. A learned log pool of the market and the forecasts, plus an MLP correction, an ensemble of five, trained on log loss with recent days weighted more heavily. It starts out identical to the market and only moves away from the crowd where the outcomes pay for it.</p>
+
+    <p>The evaluation is where most of the work went. Everything is walk-forward. Every forecast is the version that was actually public at the moment of the read, so there is no look-ahead. Every model is refit each quarter on the past only, and the last three months were sealed away until the very end. We score with proper scoring rules (log loss, RPS, Brier), always against the market's own implied probabilities at the same timestamp, never against zero. And there is a control: the same network trained on labels sampled from the market itself. It can only beat the market if the pipeline leaks the answer. It scored within 0.002 nats of the market.</p>
+
+
+    <p>First result: there used to be a lot of edge here. In late 2023, blending the market with the free forecast beat the market by 0.18 nats per ladder, which is a huge number for a liquid market. By 2025 the same blend was at zero, then slightly negative. Somebody started reading the forecast. LadderNet holds up better and stays positive in every half year, but it decays too, down to about 0.01.</p>
+
+    <p>Second result, and our favourite. The NWS puts out two main public forecast products. NBM is the blend behind the forecast on weather.gov, the one everybody looks at. GFS MOS is older and plainer and mostly lives in text bulletins. Over the last twelve months, adding NBM to the market price makes it worse. Adding GFS MOS still makes it better, at every read time, with confidence intervals clear of zero. The crowd priced in the forecast it could see, and not the one it couldn't.</p>
+
+
+    <p>Better probabilities are not the same thing as money. Every trade crosses a spread and pays Kalshi's fee, and that is where most of the edge went. With the simple blends as a taker, the strategy made about one cent per contract, and one extra cent of slippage turned it negative. As a maker the spread came back to us, but our resting orders mostly got filled right when the price was moving against us. Textbook adverse selection. The model's information cut that loss by two thirds compared to quoting blind. It did not cut it to zero.</p>
+
+    <p>The version that worked trades at 4pm the day before, only when the GFS-adjusted price disagrees with the market by at least four cents, sized with fractional Kelly over the whole ladder at once. Out of sample, with each quarter's settings chosen only on earlier quarters, it made $22k on a $10k paper bankroll over three years.</p>
+
+
+
+    <p>It is positive in six of seven cities, and the configuration it settles on most often survives two cents of slippage and ten times the size. Most of the profit came in the last year, so this isn't the 2023 edge that already decayed. Where the money comes from is worth a look, because it is the clearest picture of the whole problem: the model's picks beat the mid by a lot, and costs eat about half of it.</p>
+
+
+    <p>We tried 28 strategy configurations to get there, though, so the raw Sharpe is not the number to trust. The deflated Sharpe ratio, which corrects for how many things you tried and for fat tails, came out at 0.85. The probability of backtest overfitting came out at 0.26. Our bars were 0.95 and 0.20. Close, but not over.</p>
+
+    <p>So we ran the one test we could only run once. We wrote down the frozen strategy and the pass rule, pushed them to the repo, and only then scored July to October 2026, which nothing had touched. It passed: +$1,851 over 95 days, 80% of trades winning, a t of 1.77 against a bar of 1.645, and still positive with an extra cent of slippage. Trading noise with the same turnover lost $2,703 over the same days. Then we looked at it by month.</p>
+
+
+    <p>That is the honest headline. The edge is real, it survived a test it could not have been fit to, and it is shrinking about as fast as the 2023 edge did. Three months can't tell us whether that's renewed decay, the August switch in Kalshi's settlement source, or noise.</p>
+
+    <p>We also ran the identical pipeline on MLB game winners, the other end of the liquidity spectrum: 4,484 games, Elo plus starting pitchers, one cent spreads and around a million contracts a game. The best blend landed within 0.001 nats of the market. Nothing there. Efficient markets exist, and that is one of them.</p>
+
+    <p>What we'd tell anyone trying this. Score against the market, not against zero. Use proper scoring rules, and train on them too. Keep a control that can only win if your pipeline leaks. Count your trials and deflate your Sharpe. And lock some data away before you start, because you only get to be surprised once.</p>
+
+    <p>The strategy is now running live in shadow mode. Every day at 4pm local, a scheduled job scores the next day's ladders and commits its paper trades before the outcome exists, so the timestamps are the proof. If the decay keeps going, that ledger will show it. Next on the list: synthetic pretraining on a million station-days of forecasts, a queue-aware model for maker fills, and intraday reads with five-minute observations.</p>
+
+    <p class="coda">Every number here is reproducible from
+      <a href="https://github.com/physicalreasoning/pm-decide">physicalreasoning/pm-decide</a>,
+      with the code, raw results and the full findings record, including the bugs we caught and
+      the gate we had to amend.</p>
+  </article>
+
+  <footer>&copy; 2026 Physical Reasoning</footer>
+</div>
+</body>
+</html>
