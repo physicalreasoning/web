@@ -232,6 +232,8 @@
 
     <p>We also tried the last piece of the Jev recipe, pretraining on synthetic data. We built 92,000 fake ladders from 55 weather stations Kalshi doesn't list, with a simulated market tuned until its spreads, overround and accuracy looked like the real one. Pretraining doubled the model's edge when we only gave it a tenth of the real history, and made it slightly worse when we gave it all of it. Handy for a market that just launched. Not for this one.</p>
 
+    <p>And we tried a bigger architecture: a transformer that lets every bucket of a ladder attend to every other, in place of the small per-bucket network. Same inputs, same training, pre-registered rules. It landed within 0.004 nats of the simpler model and beat it at one read time of four, where the rule asked for three. With about 6,000 ladders per read time, more model is not what is missing. The next step is more data, then a scaling curve to see whether size starts to pay.</p>
+
     <p>What we'd tell anyone trying this. Score against the market, not against zero. Use proper scoring rules, and train on them too. Keep a control that can only win if your pipeline leaks. Count your trials and deflate your Sharpe. Be suspicious of young markets, because their early mistakes look a lot like skill. And lock some data away before you start, because you only get to be surprised once.</p>
 
     <p>The strategy is now running live in shadow mode. Every day at 4pm local, a scheduled job scores the next day's ladders and commits its paper trades before the outcome exists, so the timestamps are the proof. It carries a decay alarm: a rolling 30-day score against the market that flips to STOP if two windows in a row sit clearly below zero. The model also sits behind a small API with a model card, so you can ask it for the chance Chicago tops 85 tomorrow and get a calibrated number back. What's left is mostly waiting. If the alarm stays quiet for a month, the next step is real execution. If it fires, we'll write that up too.</p>
@@ -252,7 +254,8 @@
       D. H. Bailey, M. López de Prado, The deflated Sharpe ratio, Journal of Portfolio Management, 2014.
       D. H. Bailey, J. M. Borwein, M. López de Prado, Q. J. Zhu, The probability of backtest overfitting, Journal of Computational Finance, 2017.
       The typed question design follows TypeSafe AI's Jev; isotherm is an independent open implementation, not affiliated with TypeSafe.
-      Full list in the <a href="https://github.com/physicalreasoning/isotherm#references">repository</a>.</p>
+      Full list in the <a href="https://github.com/physicalreasoning/isotherm#references">repository</a>.
+      Code archived as <a href="https://doi.org/10.5281/zenodo.23167633">doi:10.5281/zenodo.23167633</a>.</p>
   </article>
 
   <footer>&copy; 2026 Physical Reasoning</footer>
