@@ -220,6 +220,12 @@
 
     <p>Then came the best looking result of the whole project. Kalshi started listing daily low temperatures in December 2025. Same pipeline, same family of strategies, and the backtest cleared every bar we had set: a deflated Sharpe of 0.98, a probability of backtest overfitting of 0.06, and $13k in seven months. We sealed off September and October before looking, wrote down the rule, and scored it once. It made $36.</p>
 
+    <figure>
+      <canvas id="fig6" role="img" aria-label="Cumulative paper PnL of the daily lows strategy, then flat through the sealed test"></canvas>
+      <div class="readout" id="fig6-r"></div>
+      <figcaption>fig. 6: daily lows, cumulative paper PnL. walk-forward backtest, then the sealed weeks from september 2026</figcaption>
+    </figure>
+
     <p>The model's probabilities were still better than the market's on those weeks, by 0.019 nats with an interval clear of zero. The money was gone. The tell was the placebo. In the backtest even random trades made a little money, because a brand new market was badly calibrated. In the sealed weeks random trades lost. The young market had grown up, and our edge had mostly been its growing pains.</p>
 
     <p>We also ran the identical pipeline on MLB game winners, the other end of the liquidity spectrum: 4,484 games, Elo plus starting pitchers, one cent spreads and around a million contracts a game. The best blend landed within 0.001 nats of the market. Nothing there. Efficient markets exist, and that is one of them.</p>
@@ -402,7 +408,37 @@
     hover.fig5 = null;
   }
 
-  var FIGS = [['fig1', fig1], ['fig2', fig2], ['fig3', fig3], ['fig4', fig4], ['fig5', fig5]];
+  // fig 6: daily lows, backtest then sealed test
+  var LOWBT = [152, 1414, 1475, 1584, 2198, 2826, 3062, 3224, 3250, 3184, 3038, 2564, 3103, 3396, 3103, 3487, 4825, 6028, 6148, 7349, 7568, 8306, 8657, 9319, 8556, 9051, 10989, 11873, 12761, 13009, 13278, 13384];
+  var LOWLB = [13072, 13088, 13420, 13424, 13419];
+  var LOWALL = LOWBT.concat(LOWLB), LOWSTART = Date.UTC(2026, 1, 1);
+
+  function fig6(p, k) {
+    var x = p.x, w = p.w, h = p.h, ml = 46, mr = 12, mt = 22, mb = 30;
+    var pw = w - ml - mr, ph = h - mt - mb, n = LOWALL.length, cut = LOWBT.length - 1;
+    function px(i) { return ml + i / (n - 1) * pw; }
+    function ys(v) { return mt + (15000 - v) / 15000 * ph; }
+    grid(x, ml, pw, ys, [10000, 5000, 0], function (g) { return g ? '$' + g / 1000 + 'k' : '$0'; });
+    x.fillStyle = 'rgba(0,0,0,0.05)'; x.fillRect(px(cut), mt, px(n - 1) - px(cut), ph);
+    x.fillStyle = MUTED; x.textAlign = 'right'; x.textBaseline = 'top';
+    x.fillText('sealed test', px(n - 1) - 3, mt + 4);
+    var upto = Math.round((n - 1) * k);
+    x.strokeStyle = INK; x.lineWidth = 1.6; x.beginPath();
+    for (var i = 0; i <= Math.min(upto, cut); i++) { i ? x.lineTo(px(i), ys(LOWALL[i])) : x.moveTo(px(i), ys(LOWALL[i])); }
+    x.stroke();
+    if (upto > cut) {
+      x.lineWidth = 2.4; x.beginPath(); x.moveTo(px(cut), ys(LOWALL[cut]));
+      for (var j = cut + 1; j <= upto; j++) x.lineTo(px(j), ys(LOWALL[j]));
+      x.stroke();
+    }
+    x.fillStyle = MUTED; x.textAlign = 'center'; x.textBaseline = 'top';
+    [[0, 'feb'], [8, 'apr'], [17, 'jun'], [26, 'aug'], [n - 1, 'oct']].forEach(function (t) { x.fillText(t[1], px(t[0]), mt + ph + 8); });
+    hover.fig6 = { n: n, px: px, text: function (i) {
+      var d = new Date(LOWSTART + i * 7 * 864e5).toISOString().slice(0, 10);
+      return 'week of ' + d + '  ' + usd(LOWALL[i]) + (i > cut ? '  (sealed test)' : ''); } };
+  }
+
+  var FIGS = [['fig1', fig1], ['fig2', fig2], ['fig3', fig3], ['fig4', fig4], ['fig5', fig5], ['fig6', fig6]];
   function render(k) {
     FIGS.forEach(function (f) { var c = document.getElementById(f[0]); if (c) f[1](setup(c), k); });
   }
