@@ -184,6 +184,15 @@
       <figcaption>fig. 3: cumulative paper PnL, nested walk-forward, then the sealed test from july 2026. weekly, $10k bankroll</figcaption>
     </figure>
 
+    <table class="stats">
+      <tr><td>Sharpe, annualised (95% bootstrap CI)</td><td>2.05 [0.81, 3.27]</td></tr>
+      <tr><td>Newey-West t on daily PnL</td><td>3.17</td></tr>
+      <tr><td>max drawdown</td><td>$5,195</td></tr>
+      <tr><td>hit rate</td><td>71%</td></tr>
+      <tr><td>deflated Sharpe ratio (28 configs tried)</td><td>0.85</td></tr>
+      <tr><td>probability of backtest overfitting (CSCV)</td><td>0.26</td></tr>
+      <tr><td>its main config, with +2&cent; slippage</td><td>+$4,516</td></tr>
+    </table>
 
     <p>It is positive in six of seven cities, and the configuration it settles on most often survives two cents of slippage and ten times the size. Most of the profit came in the last year, so this isn't the 2023 edge that already decayed. Where the money comes from is worth a look, because it is the clearest picture of the whole problem: the model's picks beat the mid by a lot, and costs eat about half of it.</p>
 
