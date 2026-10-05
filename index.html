@@ -252,16 +252,16 @@
     <h2>Research directions</h2>
     <ol class="directions">
       <li>
-        <h3>Predictive validity on real-world outcomes</h3>
-        <p>We elicit forecasts on resolved real-world questions as of their open date and score calibration against realized outcomes. Forecast accuracy is a measurable proxy for world model quality.</p>
+        <h3>Forecasting against the market</h3>
+        <p>We test whether a model adds information to prediction-market prices by scoring its forecasts out of sample against the market's own price at the same moment, with proper scoring rules and pre-registered sealed tests. On Kalshi daily temperature markets, free weather forecasts beat the market by a wide margin in 2023 and by very little since 2025 (<a href="https://github.com/physicalreasoning/isotherm">isotherm</a>).</p>
       </li>
       <li>
-        <h3>Physical consistency of generated video</h3>
-        <p>A benchmark built from probe tasks with simulator ground truth for gravity, object permanence, and collision, scored by a model-agnostic harness with a public leaderboard.</p>
+        <h3>Probing learned representations</h3>
+        <p>We test what a self-supervised encoder has learned by training probes on its frozen representations, against raw-feature and untrained-encoder controls. On Kalshi strike ladders, JEPA representations never beat the raw inputs, and standard collapse diagnostics pointed the wrong way (<a href="https://github.com/physicalreasoning/causal-jepa">causal-jepa</a>, <a href="/blog/we-tried-to-break-our-own-diagnostic/">write-up</a>).</p>
       </li>
       <li>
-        <h3>Representational content of model internals</h3>
-        <p>Plausible generation is compatible with internals that encode nothing about objects, mass, or velocity. We train probes on model activations to determine what is represented and what is missing.</p>
+        <h3>Evaluating world models under intervention</h3>
+        <p>We argue that a world model should be judged on whether its imagined outcome of an intervention matches what actually happens, not on prediction error alone. This is a proposed evaluation, set out in <a href="/blog/prediction-vs-understanding/">Prediction is not understanding</a>; no benchmark has been built yet.</p>
       </li>
     </ol>
   </section>
