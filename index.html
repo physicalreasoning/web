@@ -260,6 +260,10 @@
         <p>We test what a self-supervised encoder has learned by training probes on its frozen representations, against raw-feature and untrained-encoder controls. On Kalshi strike ladders, JEPA representations never beat the raw inputs, and standard collapse diagnostics pointed the wrong way (<a href="https://github.com/physicalreasoning/causal-jepa">causal-jepa</a>, <a href="/blog/we-tried-to-break-our-own-diagnostic/">write-up</a>).</p>
       </li>
       <li>
+        <h3>Sealed forward tests for world models</h3>
+        <p>We freeze and hash every model before a round opens and score it only on outcomes that resolve afterwards, against copying the last value and against the market on the same outcome. In dry runs, ECMWF's learned weather model beats its physics model once both are calibrated, and no released time-series foundation model beats copying the last price (<a href="/forward/">results</a>, <a href="https://github.com/physicalreasoning/forward">forward</a>). The first sealed round freezes on 31 October 2026.</p>
+      </li>
+      <li>
         <h3>Evaluating world models under intervention</h3>
         <p>We argue that a world model should be judged on whether its imagined outcome of an intervention matches what actually happens, not on prediction error alone. This is a proposed evaluation, set out in <a href="/blog/prediction-vs-understanding/">Prediction is not understanding</a>; no benchmark has been built yet.</p>
       </li>
