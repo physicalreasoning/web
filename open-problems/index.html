@@ -400,10 +400,15 @@
       <div class="status">new &middot; research &middot; a design in days, an experiment in weeks &middot; <a href="https://github.com/physicalreasoning/forward/issues/5">issue #5</a></div>
       <p><b>Question.</b> Can we build a small, reproducible test of whether a model's predicted
       outcome of an action matches what actually happens?</p>
-      <p><b>Why it matters.</b> It is our fourth research direction and has no benchmark. Our
+      <p><b>Why it matters.</b> It is our fourth research direction. Its only benchmark so far is
+      forward's task 3, counterfactual order fills replayed from recorded Kalshi books, still a
+      pipeline check, and nothing yet covers physical environments. Our
       <a href="/blog/prediction-vs-understanding/">position</a> that models with similar validation
       loss can differ widely under intervention is untested.</p>
-      <p><b>Code and data.</b> None yet. The cheapest ground truth is an environment that can be
+      <p><b>Code and data.</b> forward's task 3
+      (<a href="https://github.com/physicalreasoning/forward/blob/main/docs/TASK3_FILLS.md">TASK3_FILLS.md</a>)
+      is a worked template: a deterministic replay, sampled actions, and models scored on what each
+      action would have done. For physical environments, the cheapest ground truth is an environment that can be
       reset to an exact state and re-run under a different action: a deterministic simulator, a game
       engine, or a dataset with counterfactual outcomes such as CLEVRER.</p>
       <p><b>First step.</b> A one-page design: the environment, two or more models with matched

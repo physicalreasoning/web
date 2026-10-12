@@ -280,13 +280,16 @@
     beats copying the last price. <a href="/forward/">Results</a>.</p>
 
     <h3>4. Evaluating world models under intervention</h3>
-    <div class="status">Proposal &middot; no benchmark yet</div>
+    <div class="status">First benchmark in development &middot; <a href="https://github.com/physicalreasoning/forward/blob/main/docs/TASK3_FILLS.md">forward task 3</a></div>
     <p>A model that holds up under intervention is one you can plan with. We argue that a world
     model should be judged on whether its imagined outcome of an action matches what actually
     happens when the action is taken, not on prediction error alone
     (<a href="/blog/prediction-vs-understanding/">Prediction is not understanding</a>). The hard
     part is ground truth: you have to perform the intervention, which is expensive in most domains.
-    Nothing has been built yet, and the design is <a href="/open-problems/#intervention-task">an
+    Markets are an exception. A matching engine is deterministic, so replaying order books we record
+    ourselves shows what a limit order we never placed would have done; forward's task 3 scores
+    models on exactly that. Its first pipeline check uses one day of recordings, so there is no
+    result yet, and a test on physical environments is still <a href="/open-problems/#intervention-task">an
     open problem</a>.</p>
 
     <h3>How the threads connect</h3>
