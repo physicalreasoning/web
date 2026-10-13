@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="color-scheme" content="light only">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="A test video can look new while repeating a training event. We built a trajectory-lineage audit, reproduced a state-memory control, and stress-tested simple predictors on PhyWorld collisions.">
+<meta name="description" content="A test video can look new while repeating a training event. We built a trajectory-lineage audit, tested it on PhyWorld collisions, and trained a first pixel-conditioned ConvLSTM.">
 <meta property="og:title" content="New pixels, old trajectories">
-<meta property="og:description" content="A test video can look new while repeating a training event. We built a trajectory-lineage audit, reproduced a state-memory control, and stress-tested simple predictors on PhyWorld collisions.">
+<meta property="og:description" content="A test video can look new while repeating a training event. We built a trajectory-lineage audit, tested it on PhyWorld collisions, and trained a first pixel-conditioned ConvLSTM.">
 <meta property="og:url" content="https://physicalreasoning.ai/blog/new-pixels-old-trajectories/">
 <meta property="og:type" content="article">
 <meta property="article:published_time" content="2026-10-12">
@@ -173,7 +173,7 @@
     color: var(--muted);
   }
 </style>
-<script type="application/ld+json">[{"@context":"https://schema.org","@type":"BlogPosting","headline":"New pixels, old trajectories","description":"A test video can look new while repeating a training event. We built a trajectory-lineage audit, reproduced a state-memory control, and stress-tested simple predictors on PhyWorld collisions.","url":"https://physicalreasoning.ai/blog/new-pixels-old-trajectories/","datePublished":"2026-10-12","author":{"@type":"Organization","name":"Physical Reasoning"},"publisher":{"@type":"Organization","name":"Physical Reasoning","logo":{"@type":"ImageObject","url":"https://physicalreasoning.ai/og.png"}},"mainEntityOfPage":"https://physicalreasoning.ai/blog/new-pixels-old-trajectories/","image":"https://physicalreasoning.ai/og.png"}]</script>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"BlogPosting","headline":"New pixels, old trajectories","description":"A test video can look new while repeating a training event. We built a trajectory-lineage audit, tested it on PhyWorld collisions, and trained a first pixel-conditioned ConvLSTM.","url":"https://physicalreasoning.ai/blog/new-pixels-old-trajectories/","datePublished":"2026-10-12","author":{"@type":"Organization","name":"Physical Reasoning"},"publisher":{"@type":"Organization","name":"Physical Reasoning","logo":{"@type":"ImageObject","url":"https://physicalreasoning.ai/og.png"}},"mainEntityOfPage":"https://physicalreasoning.ai/blog/new-pixels-old-trajectories/","image":"https://physicalreasoning.ai/og.png"}]</script>
 </head>
 <body>
 <div class="wrap">
@@ -189,7 +189,7 @@
 
     <p>Change the colours, move the camera, replace the background, compress the video again. The pixels are new. The event may not be. If a model saw the same collision during training, how much should a correct prediction on the new rendering count as generalisation?</p>
 
-    <p>We built a collision simulator that can render the same recorded motion in different ways, and an audit that measures how reusing an event changes a predictor's score. A trajectory is the sequence of physical states through time. So far, we have tested the audit with a predictor that stores trajectories and compared simple predictors on public collision data. A learned video model is next.</p>
+    <p>We built a collision simulator that can render the same recorded motion in different ways, and an audit that measures how reusing an event changes a predictor's score. A trajectory is the sequence of physical states through time. We tested the audit with a predictor that stores trajectories, compared simple predictors on public collision data, and trained a first pixel-conditioned ConvLSTM.</p>
 
     <p>Exact file identity can be tested by hashing. Semantic similarity alone does not establish reuse of the same physical event. Video retrieval work already distinguishes transformed duplicates, complementary views and related incidents, while memorisation work on video diffusion separates repeated content from repeated motion. Known simulator lineage gives us a more specific relationship: we can hold the physical event fixed, change its pixels, and measure the effect of that exposure on evaluation.</p>
 
@@ -208,8 +208,8 @@
     <p>For each test set, the gain is the reference model's average error minus the source-trained model's average error:</p>
 
     <table class="stats" aria-label="Definitions of the source-family evaluation quantities">
-      <tr><th scope="row">source-family gain</th><td>error(background, source) &minus; error(source-trained, source)</td></tr>
-      <tr><th scope="row">independent-population gain</th><td>error(background, independent) &minus; error(source-trained, independent)</td></tr>
+      <tr><th scope="row">source-family gain</th><td>error(replacement-trained, source) &minus; error(source-trained, source)</td></tr>
+      <tr><th scope="row">independent-population gain</th><td>error(replacement-trained, independent) &minus; error(source-trained, independent)</td></tr>
       <tr><th scope="row">source-specific gap</th><td>source-family gain &minus; independent-population gain</td></tr>
     </table>
 
@@ -260,11 +260,29 @@
 
     <p>The first result was arithmetically correct and scientifically incomplete. Retrieval was much better at extrapolating stored states after objects left the image. Constant velocity was better while both objects remained visible. The choice of evaluation window changed which baseline won.</p>
 
-    <p>This is exactly why the measurement comes before the model. The learned pixel predictor will be scored separately on visible dynamics, off-screen continuation and invalid output. “Beat constant velocity” and “beat retrieval” are no longer one undifferentiated gate.</p>
+    <p>This is exactly why the measurement comes before the model. “Beat constant velocity” and “beat retrieval” are not one undifferentiated gate.</p>
 
-    <h2>Next, train a video predictor</h2>
+    <h2>Pixels in, future states out</h2>
 
-    <p>The next stage replaces lookup with a small model trained to predict future video frames. Copies of one starting model will receive independent replacement trajectories, one rendering of each source trajectory, or nearby independently generated trajectories. An additional condition will receive exact copies of source videos. We will match successful update counts, schedules and batch positions.</p>
+    <p>We then trained a compact ConvLSTM visual-state predictor. It consumes eight RGB frames and predicts the next sixteen object-centre states. Each of three seeded runs used 512 generated training videos, 128 independently generated test videos and 300 updates. Every sampled video contains an equal-mass collision after the observation prefix and before the final four frames, with trajectories that remain inside the arena. The model has 1,085,552 parameters; all three runs together took 35.5 seconds on Apple MPS.</p>
+
+    <figure aria-labelledby="fig4-caption">
+      <canvas id="fig4" role="img" aria-label="Bar chart comparing persistence, constant velocity, nearest trajectory and ConvLSTM centre errors"></canvas>
+      <table class="stats" aria-label="ConvLSTM smoke results">
+        <tr><th scope="col">predictor</th><th scope="col">mean centre error</th><th scope="col">seed SD</th></tr>
+        <tr><th scope="row">persistence</th><td>0.09886</td><td>0.00062</td></tr>
+        <tr><th scope="row">constant velocity</th><td>0.04882</td><td>0.00493</td></tr>
+        <tr><th scope="row">nearest trajectory</th><td>0.02903</td><td>0.00104</td></tr>
+        <tr><th scope="row">ConvLSTM</th><td>0.02965</td><td>0.00160</td></tr>
+      </table>
+      <figcaption id="fig4-caption">fig. 4: three-seed smoke test on generated collisions. the ConvLSTM reads pixels and predicts future object centres; lower error is better</figcaption>
+    </figure>
+
+    <p>The ConvLSTM reduced mean centre error by 39.3% relative to constant velocity and 70.0% relative to persistence. Those reference baselines use ground-truth object positions from the observed prefix; nearest-trajectory retrieval also searches ground-truth position histories. Retrieval remained slightly better, 0.02903 against 0.02965. The ConvLSTM passes the feasibility gate on this conditioned collision distribution and gives us a starting model for the exposure experiment.</p>
+
+    <h2>Next, expose the learned model</h2>
+
+    <p>Copies of one starting ConvLSTM will receive independent replacement trajectories, one rendering of each source trajectory, or nearby independently generated trajectories. An additional condition will receive exact copies of source videos. We will match successful update counts, schedules and batch positions.</p>
 
     <p>We will score independently trained blocks on exact copies, new renderings of source events, nearby events and unrestricted independent events. Each error stays visible. A larger source-specific gap counts as source learning only when the source-trained branch also improves on source events relative to both the starting checkpoint and the matched replacement branch.</p>
 
@@ -272,11 +290,13 @@
 
     <p>Several outcomes would weaken the case for a special advantage from reusing events: equal gains on source and independent events, an advantage fully explained by nearby trajectories, or matching methods that catch every overlap large enough to affect the score. Other outcomes would leave the question unresolved: tracking may be unreliable on generated frames, or the number of independent training runs required for a useful interval may exceed the compute budget.</p>
 
+    <p>The controlled study begins with one-dimensional collision dynamics rendered into 2D video, where lineage and event state are exact. The same lineage design can scale to two- and three-dimensional simulations, multiple camera views, RGB-D observations or point-cloud world models by grouping every observation derived from one latent trajectory.</p>
+
     <p>A new file is not necessarily a new example, and a new rendering is not necessarily a new event. Before treating a held-out score as evidence of a world model, we should be able to say what, exactly, was held out.</p>
 
     <p class="coda">Code, experiment configurations, machine-readable results and the findings record: <a href="https://github.com/physicalreasoning/trajectory-lineage">physicalreasoning/trajectory-lineage</a>.</p>
 
-    <p class="coda">References. B. Kang et al., <a href="https://proceedings.mlr.press/v267/kang25g.html">How Far Is Video Generation from World Model: A Physical Law Perspective</a>, ICML 2025. J. Chen et al., <a href="https://arxiv.org/abs/2410.21669">Investigating Memorization in Video Diffusion Models</a>, 2024. G. Kordopatis-Zilos et al., <a href="https://arxiv.org/abs/1809.04094">FIVR: Fine-grained Incident Video Retrieval</a>, 2019. S. He et al., <a href="https://arxiv.org/abs/2203.02654">A Large-Scale Comprehensive Dataset and Copy-Overlap Aware Evaluation Protocol for Segment-Level Video Copy Detection</a>, CVPR 2022.</p>
+    <p class="coda">References. B. Kang et al., <a href="https://proceedings.mlr.press/v267/kang25g.html">How Far Is Video Generation from World Model: A Physical Law Perspective</a>, ICML 2025. C. Chen et al., <a href="https://arxiv.org/abs/2410.21669">Investigating Memorization in Video Diffusion Models</a>, 2024. G. Kordopatis-Zilos et al., <a href="https://arxiv.org/abs/1809.04094">FIVR: Fine-grained Incident Video Retrieval</a>, 2019. S. He et al., <a href="https://arxiv.org/abs/2203.02654">A Large-Scale Comprehensive Dataset and Copy-Overlap Aware Evaluation Protocol for Segment-Level Video Copy Detection</a>, CVPR 2022.</p>
   </article>
   </main>
 
@@ -450,13 +470,42 @@
     });
   }
 
+  var MODEL = [
+    ['persistence', 0.09886],
+    ['constant velocity', 0.04882],
+    ['nearest trajectory', 0.02903],
+    ['ConvLSTM', 0.02965]
+  ];
+
+  function figModel(panel, progress) {
+    var x = panel.x, w = panel.w;
+    var left = w < 420 ? 120 : 145, right = 62, top = 38, rowHeight = 48;
+    var plotWidth = w - left - right, maximum = 0.11;
+    MODEL.forEach(function (row, index) {
+      var y = top + index * rowHeight;
+      x.fillStyle = MUTED;
+      x.textAlign = 'right';
+      x.textBaseline = 'middle';
+      x.fillText(row[0], left - 8, y);
+      x.fillStyle = FAINT;
+      x.fillRect(left, y - 8, plotWidth, 16);
+      x.fillStyle = row[0] === 'ConvLSTM' ? INK : '#777';
+      x.fillRect(left, y - 8, plotWidth * row[1] / maximum * progress, 16);
+      x.fillStyle = MUTED;
+      x.textAlign = 'left';
+      x.fillText(row[1].toFixed(5), left + plotWidth + 5, y);
+    });
+  }
+
   function renderStatic() {
     var fig1 = document.getElementById('fig1');
     var fig2 = document.getElementById('fig2');
     var fig3 = document.getElementById('fig3');
+    var fig4 = document.getElementById('fig4');
     if (fig1) figLineage(setup(fig1), 0.82);
     if (fig2) figMemory(setup(fig2), 1);
     if (fig3) figPhyWorld(setup(fig3), 1);
+    if (fig4) figModel(setup(fig4), 1);
   }
 
   function playLineage() {
@@ -482,8 +531,10 @@
       var eased = 1 - Math.pow(1 - progress, 3);
       var fig2 = document.getElementById('fig2');
       var fig3 = document.getElementById('fig3');
+      var fig4 = document.getElementById('fig4');
       if (fig2) figMemory(setup(fig2), eased);
       if (fig3) figPhyWorld(setup(fig3), eased);
+      if (fig4) figModel(setup(fig4), eased);
       if (progress < 1 && !motionQuery.matches) chartFrame = requestAnimationFrame(animate);
       else chartFrame = null;
     }
