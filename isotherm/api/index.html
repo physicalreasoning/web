@@ -225,7 +225,8 @@
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
         body: JSON.stringify(data)
       }).then(function (r) { return r.json(); }).then(function (r) {
-        if (String(r.success) !== "true") throw new Error(r.message || "failed");
+        // Before the inbox activates the form, FormSubmit holds submissions and delivers them later.
+        if (String(r.success) !== "true" && !/activ/i.test(r.message || "")) throw new Error(r.message || "failed");
         form.reset();
         status.textContent = "You're on the list. We'll write when keyed access opens.";
       }).catch(function () {
