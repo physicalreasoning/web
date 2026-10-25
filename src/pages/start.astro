@@ -1,0 +1,366 @@
+---
+import Base from '../layouts/Base.astro';
+import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+const description = 'Start here: what a world model is, the four threads Physical Reasoning works on, how they connect, what to read, and where to begin contributing.';
+---
+<Base
+  title="Start here · Physical Reasoning"
+  description={description}
+  path="/start/"
+  og={{
+    title: 'Start here · Physical Reasoning',
+    description: 'What a world model is, the four threads we work on, what to read, and where to begin contributing.',
+    type: 'website',
+  }}
+>
+<style is:global>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    color-scheme: light only;
+    --paper: #FFFFFF;
+    --ink: #000000;
+    --muted: #6B6B6B;
+    --rule: #E8E8E8;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  body {
+    font-family: var(--serif);
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.7;
+    font-size: 17px;
+  }
+  .wrap { max-width: 38rem; margin: 0 auto; padding: 0 1.25rem; }
+  nav {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 1.8rem 0;
+  }
+  .wordmark {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .back {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .back:hover { color: var(--ink); }
+  article { padding: 3rem 0 4rem; }
+  @media (max-width: 560px) { article { padding: 2rem 0 3rem; } }
+  .meta {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  article h1 {
+    font-size: clamp(1.45rem, 5vw, 1.9rem);
+    font-weight: 400;
+    line-height: 1.35;
+    text-wrap: balance;
+    margin-bottom: 1.8rem;
+  }
+  article p { margin-bottom: 1.2rem; }
+  article > p:first-of-type { font-size: 1.08rem; color: var(--muted); }
+  article a { color: var(--ink); }
+  .stats {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.4rem 0 1.6rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .stats td { padding: 0.35rem 0; border-bottom: 1px solid var(--rule); }
+  .stats td:last-child { text-align: right; }
+  .coda {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    line-height: 1.7;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+    border-top: 1px solid var(--rule);
+    margin-top: 2.6rem;
+    padding-top: 1.2rem;
+  }
+  .coda a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
+  .coda a:hover { border-bottom-color: var(--ink); }
+  .coda a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0 3rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+
+  /* start page additions, following the forward page */
+  article h2 {
+    font-size: 1.25rem;
+    font-weight: 400;
+    margin: 2.8rem 0 1rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+  article h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.5;
+    margin: 1.8rem 0 0.4rem;
+  }
+  .status {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  pre {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    line-height: 1.5;
+    color: var(--ink);
+    border-left: 1px solid var(--rule);
+    padding: 0.4rem 0 0.4rem 1rem;
+    margin: 0 0 1.4rem;
+    overflow-x: auto;
+  }
+  .stats.wide th {
+    font-weight: 400;
+    color: var(--muted);
+    text-align: left;
+    padding: 0.35rem 0.6rem 0.35rem 0;
+    border-bottom: 1px solid var(--ink);
+    vertical-align: bottom;
+  }
+  .stats.wide td { padding-right: 0.6rem; vertical-align: top; }
+  .stats.wide td:last-child { text-align: left; }
+  .stats.wide td:first-child { min-width: 7rem; }
+  .table-scroll { overflow-x: auto; }
+  .steps { padding-left: 1.2rem; margin-bottom: 1.2rem; }
+  .steps li { margin-bottom: 0.7rem; }
+  .note {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .note a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
+  .more {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 2px;
+    margin: 0.4rem 0 1.2rem;
+  }
+  .more:hover { color: var(--muted); border-color: var(--muted); }
+  .more:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+</style>
+<div class="wrap">
+  <SiteNav>
+    <a class="back" href="/">&larr; Home</a>
+  </SiteNav>
+  <article>
+    <div class="meta">Start here</div>
+    <h1>World models, what we work on, and where to begin</h1>
+    <p>Physical Reasoning is an open source research collective. Our code, data pipelines and
+    results are in public repositories, including the results that did not work, so you can start
+    contributing without asking anyone. This page covers what a world model is, the four threads
+    we work on, what to read, and where to start. Budget about an hour for it.</p>
+
+    <h2>What a world model is</h2>
+    <p>A world model is a learned simulator of an environment. Given the current state and an
+    action, it predicts what happens next.</p>
+<pre>  observation o_t
+        |
+    [encoder]
+        |
+    latent z_t ----> [decoder] --> o_t+1
+        |
+    action a_t
+        |
+   [dynamics]
+        |
+    latent z_t+1 --> reward, value, outcome</pre>
+    <p>Three parts, and the middle one is the idea. The <b>encoder</b> compresses a large
+    observation, such as a video frame of two million numbers, into a compact latent state. The
+    <b>dynamics</b> model predicts the next latent state from the current one and the action; this
+    is where the physics lives. The <b>decoder</b> turns a latent state back into an observation
+    when you need to look at it.</p>
+    <p>The payoff is that you can roll forward in latent space without decoding anything. Dreamer
+    learns behaviour from trajectories it imagines this way. That is the difference between a
+    world model and a video generator: a video generator produces plausible pixels, a world model
+    produces a state you can plan in.</p>
+    <p>A latent in this sense is not just a hidden layer. Every network has hidden activations; a
+    latent here is a designed bottleneck, with an encoder into it and dynamics defined on it. That
+    distinction decides what you can measure about a model, and most of our work is about
+    measuring.</p>
+
+    <h3>The lineage, briefly</h3>
+    <div class="table-scroll">
+    <table class="stats wide">
+      <tr><th>System</th><th>Year</th><th>What it showed</th></tr>
+      <tr><td>World Models (Ha, Schmidhuber)</td><td>2018</td><td>a VAE code and a recurrent dynamics model; a controller trained entirely inside the model's dream</td></tr>
+      <tr><td>PlaNet, Dreamer</td><td>2019-23</td><td>deterministic plus stochastic latent state; behaviour learned purely in imagination</td></tr>
+      <tr><td>MuZero</td><td>2020</td><td>a model that never predicts observations can still plan well</td></tr>
+      <tr><td>IRIS</td><td>2023</td><td>tokenised frames and a transformer: autoregressive world models are sample-efficient</td></tr>
+      <tr><td>Genie</td><td>2024</td><td>action spaces learned from unlabeled video</td></tr>
+      <tr><td>GameNGen, DIAMOND</td><td>2024</td><td>diffusion over frames: playable neural game engines</td></tr>
+      <tr><td>I-JEPA, V-JEPA</td><td>2023-24</td><td>predict features, not pixels; no decoder at all</td></tr>
+      <tr><td>MIRA</td><td>2026</td><td>multiplayer Rocket League in real time, each change attributed to the right player</td></tr>
+    </table>
+    </div>
+    <p>If you read one thing first, read Ha and Schmidhuber (2018). It is short, and much of what
+    followed is a variation on it.</p>
+
+    <h2>What we work on</h2>
+    <p>Four threads, all asking one question: has a model learned how the world works, or only the
+    surface statistics of its training data? Prediction error on held-out data cannot tell those
+    apart, so each thread tests a model against something harder.</p>
+
+    <h3>1. Forecasting against the market</h3>
+    <div class="status">Live &middot; <a href="https://github.com/physicalreasoning/isotherm">isotherm</a></div>
+    <p>A prediction market prices every outcome, and its price is the hardest baseline available:
+    everyone willing to stake money on the answer. isotherm is a calibrated decision model for
+    Kalshi's daily temperature markets, scored out of sample against the market's own price at the
+    same moment. On New York, adding free National Weather Service forecasts to the price gained
+    +0.224 nats per ladder in the second half of 2023, and nothing distinguishable from zero, or
+    worse, since 2025: the crowd learned to read the forecast. The strategy found on 2023 to 2026
+    data passed its sealed test as registered, narrowly (+$1,851 over 95 days, Newey-West t 1.77),
+    with monthly profit halving each month. The model is live as an API and an MCP server.</p>
+    <p>The lesson so far, across weather, gas, indices, currencies and commodities: skill pays
+    where public information takes work to use, and not where the information is a free real-time
+    price. Every result, including the failures, is in
+    <a href="https://github.com/physicalreasoning/isotherm/blob/main/FINDINGS.md">FINDINGS.md</a>
+    and on the <a href="/isotherm/">dashboard</a>.</p>
+
+    <h3>2. Probing learned representations</h3>
+    <div class="status">Closed, negative &middot; <a href="https://github.com/physicalreasoning/causal-jepa">causal-jepa</a></div>
+    <p>We trained joint-embedding predictive architectures (JEPAs) on Kalshi strike ladders and
+    probed what the frozen encoder had learned, against raw inputs and an untrained encoder of the
+    same width. The representations never beat the raw inputs (ridge R&sup2; +0.4529 for the best
+    JEPA readout, +0.5091 for raw features), and an untrained encoder got almost all of the way
+    (+0.4423). The collapse diagnostic we built correlated with usefulness the wrong way (+0.390),
+    and the metric everything was ranked by turned out to be mostly measuring input reconstruction.
+    One narrow lift survives every control: +0.0278 residual R&sup2; on future realised volatility.</p>
+    <p>What carries over: run the untrained-encoder control, and check whether a probe target can
+    rank representations at all before training anything. Write-up:
+    <a href="/blog/we-tried-to-break-our-own-diagnostic/">We tried to break our own diagnostic</a>.</p>
+
+    <h3>3. Sealed forward tests</h3>
+    <div class="status">Live &middot; Round 1 freezes 31 October 2026 &middot; <a href="https://github.com/physicalreasoning/forward">forward</a></div>
+    <p>Benchmarks leak into training data. Outcomes that have not happened yet cannot. forward
+    freezes and hashes every entry before a round opens and scores it only on outcomes that resolve
+    afterwards, against copying the last value and against the market on the same outcome. In dry
+    runs, ECMWF's learned weather model (AIFS) loses to its physics model (IFS) out of the box
+    (&minus;0.061) and beats it once both are calibrated (+0.133); the best blend still loses to the
+    Kalshi market priced at its bids (&minus;0.113); and no released time-series foundation model
+    beats copying the last price. <a href="/forward/">Results</a>.</p>
+
+    <h3>4. Evaluating world models under intervention</h3>
+    <div class="status">First benchmark in development &middot; <a href="https://github.com/physicalreasoning/forward/blob/main/docs/TASK3_FILLS.md">forward task 3</a></div>
+    <p>A model that holds up under intervention is one you can plan with. We argue that a world
+    model should be judged on whether its imagined outcome of an action matches what actually
+    happens when the action is taken, not on prediction error alone
+    (<a href="/blog/prediction-vs-understanding/">Prediction is not understanding</a>). The hard
+    part is ground truth: you have to perform the intervention, which is expensive in most domains.
+    Markets are an exception. A matching engine is deterministic, so replaying order books we record
+    ourselves shows what a limit order we never placed would have done; forward's task 3 scores
+    models on exactly that. Its first pipeline check uses one day of recordings, so there is no
+    result yet, and a test on physical environments is still <a href="/open-problems/#intervention-task">an
+    open problem</a>.</p>
+
+    <h3>How the threads connect</h3>
+    <p>They are four attacks on the same question, and the lessons move between them. forward's six
+    columns are built from the other threads: skill against copying, because causal-jepa showed
+    that a model which copies its input looks healthy on every other diagnostic; skill against the
+    market priced at its bids, because isotherm found that mid prices flatter every model on thin
+    books; and the share of a gain one month explains, because isotherm found the month explains 97
+    to 99% of the variance in its results. Intervention is the test none of the others can run: the
+    first three check predictions of outcomes the model cannot influence.</p>
+    <p>Two topics from our earlier notes, learning action spaces from unlabeled video and
+    persistent spatial memory for interactive world models, have no code or results yet. We list
+    them so they are not mistaken for work in progress; proposals are welcome.</p>
+
+    <h2>How we work</h2>
+    <ol class="steps">
+      <li><b>Pre-register.</b> The question, the data and the pass rule are written and pushed
+      before any test data is fetched. Anything found by looking is labelled exploration and goes to
+      a sealed test before it counts.</li>
+      <li><b>Seal the test.</b> A test set or forward window is scored once, under the rule written
+      before it.</li>
+      <li><b>Publish negative results.</b> Every pre-registered test is written up whatever it
+      returns. Corrections go beside the original, never in place of it.</li>
+      <li><b>Beat the strongest baseline.</b> The market priced at its bids, copying the last value,
+      an untrained encoder of the same size.</li>
+      <li><b>Honest intervals.</b> 95% intervals that resample whole dates, because rows on one date
+      are not independent.</li>
+    </ol>
+    <p>Each repository's CONTRIBUTING.md has the details, the setup (Python and
+    <a href="https://docs.astral.sh/uv/">uv</a>) and the commit style.</p>
+
+    <h2>What to read</h2>
+    <p>Tier 0 is about a day and is enough for a real conversation with us. The rest is for going
+    deep on a thread.</p>
+    <table class="stats wide">
+      <tr><th>Tier</th><th>Reading</th></tr>
+      <tr><td>0 &middot; orientation</td><td>our <a href="/blog/">blog</a>; <a href="https://arxiv.org/abs/1803.10122">World Models</a> (Ha, Schmidhuber 2018); <a href="https://arxiv.org/abs/2301.04104">DreamerV3</a> (Hafner et al. 2023); <a href="https://arxiv.org/abs/2402.15391">Genie</a> (Bruce et al. 2024)</td></tr>
+      <tr><td>1 &middot; foundations</td><td><a href="https://arxiv.org/abs/1811.04551">PlaNet</a> (the RSSM); <a href="https://arxiv.org/abs/2010.02193">DreamerV2</a> (why categorical latents); <a href="https://arxiv.org/abs/1911.08265">MuZero</a> (planning without reconstruction); <a href="https://arxiv.org/abs/2209.00588">IRIS</a> (the autoregressive branch)</td></tr>
+      <tr><td>2 &middot; generative</td><td><a href="https://arxiv.org/abs/2405.12399">DIAMOND</a> (run this one); <a href="https://arxiv.org/abs/2408.14837">GameNGen</a>; <a href="https://arxiv.org/abs/2607.05352">MIRA</a> (Hu et al. 2026)</td></tr>
+      <tr><td>3 &middot; representations</td><td><a href="https://arxiv.org/abs/2210.13382">Othello-GPT</a> and <a href="https://www.neelnanda.io/mechanistic-interpretability/othello">Nanda's linear-probe follow-up</a> (read together: probe design changes the conclusion); <a href="https://arxiv.org/abs/1909.03368">control tasks for probes</a> (Hewitt, Liang 2019); <a href="https://arxiv.org/abs/2301.08243">I-JEPA</a>; <a href="https://arxiv.org/abs/2404.08471">V-JEPA</a>; <a href="https://arxiv.org/abs/2510.26782">Cloning Deterministic Worlds</a> (why long rollouts fall apart); <a href="https://arxiv.org/abs/2610.09048">Towards Financial World Modeling</a> (Merchant et al. 2026)</td></tr>
+      <tr><td>4 &middot; evaluation</td><td><a href="https://arxiv.org/abs/2106.08261">Physion</a> (physical prediction against humans); <a href="https://arxiv.org/abs/1910.01442">CLEVRER</a> (counterfactual questions); <a href="https://arxiv.org/abs/2409.19839">ForecastBench</a> (forecasting questions that resolve later); Gneiting and Raftery (2007), proper scoring rules</td></tr>
+    </table>
+    <p>Two habits matter more than coverage. Find what each paper did not show: every result has a
+    scope, and the useful question is where it stops. And run at least one model yourself:
+    reading about world models and debugging one are different skills.</p>
+
+    <h2>Where to start</h2>
+    <p>The quickest way in is one of the
+    <a href="/open-problems/">open problems</a>: twelve starter projects, a few days to a few weeks
+    each, every one an issue on GitHub with the code, the data, a first step and the pre-registered
+    test it would be judged by. Comment on the issue before you start, so two people do not do the
+    same work.</p>
+    <p>If you would rather start from scratch, a two-week path that needs nothing from us:</p>
+    <ol class="steps">
+      <li><b>Days 1 to 2.</b> Read Tier 0. You should be able to explain why a latent is not just a
+      hidden layer.</li>
+      <li><b>Days 3 to 5.</b> Train <a href="https://github.com/eloialonso/diamond">DIAMOND</a> or an
+      IRIS-style model on one Atari game. The point is not the score; it is that you have debugged a
+      world model and seen where it breaks.</li>
+      <li><b>Days 6 to 10.</b> Pick a thread and try to break it: find what one of our results did not
+      show, and test it.</li>
+      <li><b>Days 11 to 14.</b> Write one page: what you tried, what happened, and what you now
+      believe that you did not before. Lead with what surprised you, and post it as an issue on the
+      repository it concerns.</li>
+    </ol>
+    <p>Contributing does not require applying for anything. If you do want to work with us, the
+    open roles are on the <a href="/join/">Join</a> page, and a page like the one above, about
+    something that did not work, tells us more than a CV.</p>
+    <p class="coda">Open problems: <a href="/open-problems/">physicalreasoning.ai/open-problems</a>.
+    Code: <a href="https://github.com/physicalreasoning">github.com/physicalreasoning</a>.
+    Questions about a project: an issue on its repository. Anything else:
+    <a href="mailto:contact@physicalreasoning.ai">contact@physicalreasoning.ai</a>.</p>
+  </article>
+  <SiteFooter />
+</div>
+</Base>

@@ -1,0 +1,237 @@
+---
+import Base from '../../layouts/Base.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+
+const curlExample = String.raw`curl -s -X POST https://isotherm.onrender.com/decide \
+  -H 'content-type: application/json' \
+  -d '{"city": "NY", "questions": [{"kind": "noul", "set": {"lo": 76}}]}'`;
+const description = "The isotherm API: calibrated probabilities for tomorrow's high, as a plain API and an MCP server. Join the waitlist for keyed access.";
+---
+<Base
+  title="isotherm API · Physical Reasoning"
+  description={description}
+  path="/isotherm/api/"
+  og={{
+    title: 'isotherm API · Physical Reasoning',
+    description: "Calibrated probabilities for tomorrow's high, as an API and an MCP server. Join the waitlist for keyed access.",
+    type: 'website',
+  }}
+>
+<style is:global>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    color-scheme: light only;
+    --paper: #FFFFFF;
+    --ink: #000000;
+    --muted: #6B6B6B;
+    --rule: #E8E8E8;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  body {
+    font-family: var(--serif);
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.65;
+    font-size: 17px;
+  }
+  .wrap { max-width: 40rem; margin: 0 auto; padding: 0 1.25rem; }
+
+  nav {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 1.8rem 0;
+  }
+  .wordmark {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .back {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .back:hover { color: var(--ink); }
+
+  header { padding: 3.5rem 0 2rem; }
+  header h1 { font-size: 1.8rem; font-weight: 400; }
+  header p { margin-top: 0.8rem; color: var(--muted); }
+  a { color: var(--ink); }
+
+  h2 {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-top: 1.6rem;
+    border-top: 1px solid var(--rule);
+    margin-top: 1.6rem;
+  }
+  section p { margin-top: 0.8rem; }
+  section ul { margin: 0.8rem 0 0 1.1rem; }
+  section li { margin-top: 0.3rem; }
+  pre {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    line-height: 1.55;
+    background: #F6F6F6;
+    padding: 0.9rem 1rem;
+    margin-top: 0.9rem;
+    overflow-x: auto;
+  }
+
+  form { margin-top: 1.2rem; display: grid; gap: 1rem; }
+  label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+  label span { text-transform: none; letter-spacing: 0; }
+  input, select, textarea {
+    width: 100%;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid #CFCFCF;
+    border-radius: 0;
+    padding: 0.55rem 0.7rem;
+  }
+  textarea { min-height: 6rem; resize: vertical; }
+  input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+  .hp { position: absolute; left: -9999px; }
+  button {
+    justify-self: start;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--paper);
+    background: var(--ink);
+    border: 0;
+    padding: 0.75rem 1.2rem;
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .fine { font-size: 0.85rem; color: var(--muted); }
+  .status { font-size: 0.95rem; min-height: 1.5rem; }
+
+  footer {
+    padding: 3rem 0 3rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+</style>
+<div class="wrap">
+  <SiteNav>
+    <a class="back" href="/isotherm/">&larr; isotherm</a>
+  </SiteNav>
+
+  <header>
+    <h1>isotherm API</h1>
+    <p>Calibrated probabilities for tomorrow's high temperature in seven US cities, each answer read off one distribution that is scored every day against the market. Ask it, for example, for the chance New York reaches 76&deg;F, as a plain API or as an MCP server an agent can call.</p>
+  </header>
+
+  <section>
+    <h2>Open now</h2>
+    <p>The public endpoint is free and needs no key. It runs on free hosting, so the first request after a quiet spell can take up to a minute.</p>
+<pre>{curlExample}</pre>
+    <p>Docs: <a href="https://isotherm.onrender.com/docs">isotherm.onrender.com/docs</a>. MCP setup: <a href="https://github.com/physicalreasoning/isotherm/blob/main/docs/API.md">docs/API.md</a>. Results behind every number: <a href="/isotherm/">the results page</a>.</p>
+  </section>
+
+  <section>
+    <h2>Waitlist</h2>
+    <p>We are planning keyed access for people who rely on it:</p>
+    <ul>
+      <li>an always-on endpoint, with no cold start</li>
+      <li>higher rate limits</li>
+      <li>every city's full distribution at each daily read, in one call</li>
+    </ul>
+    <p>Leave your email and we will write once, when it opens.</p>
+
+    <form id="waitlist" action="https://formsubmit.co/physicalreasoninglabs@gmail.com" method="POST">
+      <input type="hidden" name="_subject" value="isotherm API waitlist">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_next" value="https://physicalreasoning.ai/isotherm/api/?joined=1">
+      <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div>
+        <label for="email">Email</label>
+        <input id="email" type="email" name="email" required autocomplete="email">
+      </div>
+      <div>
+        <label for="name">Name <span>(optional)</span></label>
+        <input id="name" type="text" name="name" autocomplete="name">
+      </div>
+      <div>
+        <label for="use">What it's for</label>
+        <select id="use" name="use">
+          <option>Research</option>
+          <option>An agent or MCP client</option>
+          <option>Trading</option>
+          <option>Something else</option>
+        </select>
+      </div>
+      <div>
+        <label for="notes">Anything else <span>(optional)</span></label>
+        <textarea id="notes" name="notes" placeholder="Cities, volume, what you would build"></textarea>
+      </div>
+      <button type="submit">Join the waitlist</button>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+    </form>
+    <p class="fine">We use your email only to tell you when keyed access opens. isotherm serves its own forecasts, not market data. Forms are delivered by <a href="https://formsubmit.co">FormSubmit</a>.</p>
+  </section>
+
+  <SiteFooter />
+</div>
+<script is:inline>
+  (function () {
+    var form = document.getElementById("waitlist");
+    var status = document.getElementById("status");
+    if (new URLSearchParams(location.search).get("joined")) {
+      status.textContent = "You're on the list. We'll write when keyed access opens.";
+    }
+    form.addEventListener("submit", function (e) {
+      if (!window.fetch) return;
+      e.preventDefault();
+      var btn = form.querySelector("button");
+      btn.disabled = true;
+      status.textContent = "Sending...";
+      var data = Object.fromEntries(new FormData(form));
+      fetch(form.action.replace("formsubmit.co/", "formsubmit.co/ajax/"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(data)
+      }).then(function (r) { return r.json(); }).then(function (r) {
+        // Before the inbox activates the form, FormSubmit holds submissions and delivers them later.
+        if (String(r.success) !== "true" && !/activ/i.test(r.message || "")) throw new Error(r.message || "failed");
+        form.reset();
+        status.textContent = "You're on the list. We'll write when keyed access opens.";
+      }).catch(function () {
+        status.textContent = "That didn't go through. Try again, or open an issue on GitHub.";
+      }).finally(function () { btn.disabled = false; });
+    });
+  })();
+</script>
+</Base>

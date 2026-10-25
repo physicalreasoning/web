@@ -1,0 +1,12 @@
+---
+// The top bar: the [Pr] wordmark on the left, and whatever link the page passes in on the right.
+interface Props {
+  home?: string;
+}
+
+const { home = '/' } = Astro.props;
+---
+<nav>
+  <a class="wordmark" href={home}>[Pr]</a>
+  <slot />
+</nav>

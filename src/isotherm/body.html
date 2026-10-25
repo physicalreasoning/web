@@ -1,0 +1,87 @@
+<div class="wrap">
+  <nav class="site"><a class="wordmark" href="/">[Pr]</a><a class="back" href="/blog/">&larr; Blog</a></nav>
+  <header>
+    <canvas id="iso" aria-hidden="true"></canvas>
+    <div class="brand"><h1>isotherm</h1><span class="tag">calibrated decision model · Kalshi weather markets · temperature and rain</span></div>
+    <p class="lede">An open, Jev-style decision model: typed questions in, calibrated probabilities out, all read off one distribution over tomorrow's high. Every chart here is scored out of sample against the market's own price at the same timestamp. Code and raw results: <a href="https://github.com/physicalreasoning/isotherm">physicalreasoning/isotherm</a>. Ask it yourself: <a href="https://isotherm.onrender.com/docs">API</a> or <a href="https://github.com/physicalreasoning/isotherm/blob/main/docs/API.md">MCP for agents</a>. Keyed access: <a href="https://physicalreasoning.ai/isotherm/api/">join the waitlist</a>.</p>
+    <div class="pills" id="pills"></div>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button role="tab" id="tab-prob" aria-controls="prob" aria-selected="true">Probabilities</button>
+    <button role="tab" id="tab-trade" aria-controls="trade" aria-selected="false">Trading</button>
+    <button role="tab" id="tab-sealed" aria-controls="sealed" aria-selected="false">Sealed tests</button>
+    <button role="tab" id="tab-ablate" aria-controls="ablate" aria-selected="false">Markets &amp; ablations</button>
+    <button role="tab" id="tab-research" aria-controls="research" aria-selected="false">Research</button>
+    <button role="tab" id="tab-live" aria-controls="live" aria-selected="false">Live</button>
+  </nav>
+
+  <section class="panel" id="prob" role="tabpanel" aria-labelledby="tab-prob">
+    <div class="controls"><label for="seg-read">Read time</label><div class="seg" id="seg-read" role="group" aria-label="Read time"></div></div>
+    <div class="grid">
+      <div class="card"><h3>Edge over the market, by half-year</h3><p class="note">Log score gain in nats per ladder. The simple pools went to zero in 2025; isotherm stays positive but decays.</p><div class="chart" id="c-decay"></div><div class="src">results/benchmark.json, benchmark_g2.json</div></div>
+      <div class="card"><h3>Leaderboard on identical rows</h3><p class="note">Every model against the market with a 95% date-block CI. The control is trained on labels sampled from the market, so it can only win if the pipeline leaks.</p><div class="chart" id="c-board"></div><div class="src">results/benchmark_g2.json</div></div>
+      <div class="card"><h3>Calibration</h3><p class="note">Every bucket as a yes/no question: predicted probability against how often it happened.</p><div class="chart" id="c-calib"></div><div class="src">results/benchmark_g2.json · reliability</div></div>
+      <div class="card"><h3>Which forecast the market already prices</h3><p class="note">Last 12 months. Adding NBM, the forecast behind weather.gov, no longer helps. GFS MOS still does.</p><div class="chart" id="c-split"></div><div class="src">results/benchmark_g2.json · recent slice</div></div>
+      <div class="card wide"><h3>By city, last 12 months</h3><p class="note">isotherm minus market. Blue is better than the market, red worse; a dot marks a CI that excludes zero.</p><div class="chart" id="c-city"></div><div class="src">results/benchmark_g2.json</div></div>
+    </div>
+  </section>
+
+  <section class="panel" id="trade" role="tabpanel" aria-labelledby="tab-trade" hidden>
+    <div class="controls"><label for="sel-cell">Strategy cell</label><select id="sel-cell"></select></div>
+    <div class="grid">
+      <div class="card"><h3>Paper PnL, nested walk-forward</h3><p class="note">$10k bankroll, Kalshi fees. Each quarter trades the config with the best Sharpe on earlier quarters only.</p><div class="chart" id="c-equity"></div><div class="src">results/backtest_g2.json</div></div>
+      <div class="card"><h3>Cell statistics</h3><p class="note">Deflated Sharpe corrects for the 28 configs tried; PBO is the chance the in-sample winner lands below the median out of sample.</p><table class="stats" id="t-cell"></table></div>
+      <div class="card"><h3>Overfitting map, every cell we ran</h3><p class="note">Believable needs DSR ≥ 0.95 and PBO ≤ 0.20. Only the daily lows 4pm cell got there, and its sealed test made $36.</p><div class="chart tall" id="c-over"></div><div class="src">results/backtest_*.json, lows_backtest.json, sports_backtest.json</div></div>
+      <div class="card"><h3>Where the money goes</h3><p class="note">Alpha against the mid versus what execution costs. Takers pay the spread; makers earn it and lose it again to adverse selection.</p><div class="chart tall" id="c-attr"></div><div class="src">results/backtest_g2.json</div></div>
+      <div class="card wide"><h3>Stress test for the selected cell</h3><p class="note">The configuration nested selection used most, under worse fills, higher fees, different size and participation.</p><div class="chart" id="c-robust"></div><div class="src">results/backtest_g2.json · robustness</div></div>
+    </div>
+  </section>
+
+  <section class="panel" id="sealed" role="tabpanel" aria-labelledby="tab-sealed" hidden>
+    <div class="grid">
+      <div class="card"><h3>Highs: backtest, then the sealed test <span class="verdict" id="v-highs"></span></h3><p class="note">Strategy and pass rule pushed before scoring; July to October 2026 scored once.</p><div class="chart" id="c-sh"></div><table class="stats" id="t-sh"></table></div>
+      <div class="card"><h3>Daily lows: backtest, then the sealed test <span class="verdict" id="v-lows"></span></h3><p class="note">The best backtest in the project. The placebos flipped from profit to loss in the sealed weeks: the young market had corrected.</p><div class="chart" id="c-sl"></div><table class="stats" id="t-sl"></table></div>
+      <div class="card wide"><h3>Sealed tests by month</h3><p class="note">Highs profits roughly halved each month. Lows were flat.</p><div class="chart" id="c-months"></div></div>
+    </div>
+  </section>
+
+  <section class="panel" id="ablate" role="tabpanel" aria-labelledby="tab-ablate" hidden>
+    <div class="grid">
+      <div class="card"><h3>Market selection survey</h3><p class="note">17 Kalshi series. Weather has history, room in the spread and a free forecast. Point size: log median volume per event.</p><div class="chart tall" id="c-survey"></div><div class="src">results/survey.json</div></div>
+      <div class="card"><h3>Synthetic pretraining (G3)</h3><p class="note">92k synthetic ladders from 55 stations Kalshi does not list. Helps when real data is scarce, slightly hurts with all of it.</p><div class="chart tall" id="c-g3"></div><div class="src">results/g3_learning_curve.json</div></div>
+      <div class="card"><h3>MLB: same pipeline, no edge</h3><p class="note">Elo and starting pitchers pooled with the market, by time before first pitch.</p><div class="chart" id="c-mlb"></div><div class="src">results/sports_benchmark.json</div></div>
+      <div class="card"><h3>Transformer over buckets</h3><p class="note">Attention across a ladder's buckets in place of the per-bucket MLP, pre-registered. Transformer minus isotherm on the last 12 months: it needed 3 of 4 read times above zero and cleared 1, so the MLP stays.</p><div class="chart" id="c-tf"></div><div class="src">results/transformer_gate.json</div></div>
+      <div class="card"><h3>Daily lows gate 0</h3><p class="note">Pooling the market with each forecast, February to August 2026.</p><div class="chart" id="c-lows"></div><div class="src">results/lows_benchmark.json</div></div>
+    </div>
+  </section>
+
+  <section class="panel" id="research" role="tabpanel" aria-labelledby="tab-research" hidden>
+    <div class="grid">
+      <div class="card wide"><h3>Everything tried against the MLP</h3><p class="note">Log score gain over the per-read MLP, last 12 months before the lockbox, 95% date-block CI; highlighted where the CI is above zero. <b>gate</b>: written down before it ran, needs 3 of 4 reads. <b>explore</b>: found by looking, so only the forward test can confirm it. <b>control</b>: a baseline from Merchant et al. 2026; random features with a trained head tie the MLP, and the month explains 97 to 99% of the variance in monthly gain. The weather model (§35) covers 16:00 day before only; its gate is that one read.</p><div class="tablewrap"><table class="arms" id="t-arms"></table></div><div class="src">results/transformer_large_gate.json · data_scaling.json · nbm_spread.json · explore_*.json</div></div>
+      <div class="card wide" id="card-signals" hidden><h3>The market alone: mostly a pricing artefact</h3><p class="note">Market-only signals, log score gain over the mid-price market, test rows from 2026, 95% date-block CI (§39, exploration). Raising each bucket's price to a power of about 1.17 beats the mid market, but pricing buckets at their bids does most of that with no parameters: the mid counts unbid asks as probability (§41). Beyond the bid-priced market, sharpening wins only at 2pm. Sealed test against it from 2026-10-10.</p><div class="tablewrap"><table class="arms" id="t-signals"></table></div><div class="src">results/alpha/weather_signals.json</div></div>
+      <div class="card wide" id="card-bench" hidden><h3>Beyond weather: free prices do not beat the book</h3><p class="note">Benchmark v1, 13 Kalshi series (§47). Bid vs mid: pricing each bucket at its bid instead of the mid, the §41 artefact. Outside vs in-quote: a model from the free hourly price and its recent volatility against the market at its most favourable price inside each quote; positive would be information beyond the spread. Only oil a day out clears zero; found by looking, it has a sealed test from 2026-10-12 (§48). A pre-registered test on five other daily commodity ladders passed (+0.33 a day out, §49), but the gain sits in a few stale ladders and a taker makes about nothing after fees.</p><div class="tablewrap"><table class="arms" id="t-bench"></table></div><div class="src">results/bench/baselines.json</div></div>
+      <div class="card wide" id="card-typed" hidden><h3>The typed answers: better calibrated, not better located</h3><p class="note">What an API user receives, read off one integer distribution, last 12 months before the lockbox (§38). Noul: calibration error of P(high ≥ t) at every integer within 6°F of the forecast. Score: how much more often the 80% interval holds the high than its own probability says, and Δ CRPS against the market (positive is better).</p><div class="tablewrap"><table class="arms" id="t-typed"></table></div><div class="src">results/typed_eval.json</div></div>
+      <div class="card wide" id="card-cities" hidden><h3>Twelve newer cities, each as a city of its own</h3><p class="note">Training on all nineteen cities instead of seven, each with its own city input: Δ log score, test 2026-07-01 to 2026-10-04, 95% date-block CI (§36). Exploration only; the pre-registered test is on January to April 2027 (§37).</p><div class="tablewrap"><table class="arms" id="t-cities"></table></div><div class="src">results/explore_cities.json</div></div>
+      <div class="card" id="card-wx" hidden><h3>One weather model across 576 stations</h3><p class="note">A network trained on 1.16 million station-days of NBM and GFS MOS forecasts against NWS climate reports, scored at 16:00 day before on the seven cities' ladders (§35).</p><table class="stats" id="t-wx"></table><div class="src">results/wx_gate.json</div></div>
+      <div class="card"><h3>The transformer keeps learning; the MLP has stopped</h3><p class="note">Gain over the market by share of training dates, pooled over reads. The MLP gains 0.003 nats from four times the data, the transformer 0.010.</p><div class="chart" id="c-curve"></div><div class="src">results/data_scaling.json</div></div>
+      <div class="card"><h3>Twelve cities it never saw</h3><p class="note" id="n-unseen"></p><div class="chart" id="c-unseen"></div><div class="src">results/unseen_cities.json</div></div>
+      <div class="card"><h3>The market got sharper</h3><p class="note">Log loss by month at 16:00 day before, seven cities; lower is better. The crowd improved by about 0.15 nats in a year while EMOS-NBM stood still.</p><div class="chart" id="c-regime"></div><div class="src">results/regime_audit.json</div></div>
+      <div class="card"><h3>GFS's weight is seasonal</h3><p class="note">Weight on EMOS-GFS in a market+GFS pool refit on the trailing 90 days: high in summer, low in winter.</p><div class="chart" id="c-wgfs"></div><div class="src">results/regime_audit.json</div></div>
+      <div class="card wide"><h3>Sealed forward test</h3><p class="note">Frozen on 2026-10-06 before the first test read and scored on ladders from 2026-10-07 to 2027-04-05 at 16:00 day before; the weather model, frozen a day later, from 2026-10-09. An arm wins only if its gain over the MLP has a 95% CI above zero over the whole window.</p><table class="stats" id="t-forward"></table><div class="src">shadow/forward/ · scripts/forward_test.py</div></div>
+    </div>
+  </section>
+
+  <section class="panel" id="live" role="tabpanel" aria-labelledby="tab-live" hidden>
+    <div class="grid">
+      <div class="card"><h3>Live shadow record</h3><p class="note">The frozen strategy scores every city daily at 16:00 local and commits its paper trades before the outcome exists. Ledger on the <a href="https://github.com/physicalreasoning/isotherm/tree/shadow-ledger">shadow-ledger</a> branch.</p><table class="stats" id="t-live"></table></div>
+      <div class="card"><h3>Decay alarm</h3><p class="note">Rolling 30-day log score gain against the market. STOP when two consecutive windows sit fully below zero.</p><div class="chart" id="c-live"></div></div>
+    </div>
+  </section>
+
+  <footer>Generated by <span style="font-family:var(--mono)">scripts/dashboard.py</span> from the raw results; it computes nothing new. Repo: <a href="https://github.com/physicalreasoning/isotherm">physicalreasoning/isotherm</a>.</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.35.3/plotly.min.js"></script>

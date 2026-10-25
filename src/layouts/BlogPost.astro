@@ -1,0 +1,60 @@
+---
+// A blog post: metadata and JSON-LD come from src/data/posts.ts, the article from the page.
+// Put the post's <style> in the "head" slot and any chart scripts in the "after" slot,
+// which renders after the article wrapper, where the scripts can find their canvases.
+import Base from './Base.astro';
+import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { getPost } from '../data/posts';
+
+interface Props {
+  slug: string;
+}
+
+const post = getPost(Astro.props.slug);
+const path = `/blog/${post.slug}/`;
+const url = new URL(path, Astro.site).href;
+const ogImage = new URL('/og.png', Astro.site).href;
+
+const jsonLd = [{
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.title,
+  description: post.description,
+  url,
+  datePublished: post.published,
+  author: { '@type': 'Organization', name: 'Physical Reasoning' },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Physical Reasoning',
+    logo: { '@type': 'ImageObject', url: ogImage },
+  },
+  mainEntityOfPage: url,
+  image: ogImage,
+}];
+---
+<Base
+  title={`${post.title} · Physical Reasoning`}
+  description={post.description}
+  path={path}
+  og={{
+    title: post.title,
+    description: post.description,
+    type: post.ogType,
+    publishedTime: post.ogType === 'article' ? post.published : undefined,
+  }}
+>
+  <Fragment slot="head">
+    <JsonLd data={jsonLd} />
+    <slot name="head" />
+  </Fragment>
+<div class="wrap">
+  <SiteNav>
+    <a class="back" href="/blog/">&larr; Blog</a>
+  </SiteNav>
+<slot />
+  <SiteFooter />
+</div>
+<slot name="after" />
+</Base>

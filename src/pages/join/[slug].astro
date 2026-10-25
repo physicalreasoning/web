@@ -1,0 +1,113 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { roles, type Role } from '../../data/roles';
+
+export const getStaticPaths = (() =>
+  roles.map((role) => ({ params: { slug: role.slug }, props: { role } }))) satisfies GetStaticPaths;
+
+interface Props {
+  role: Role;
+}
+
+const { role } = Astro.props;
+const title = `${role.title} · Physical Reasoning`;
+const formSrc = `https://tally.so/embed/${role.tallyForm}?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1`;
+---
+<Base
+  title={title}
+  description={role.description}
+  path={`/join/${role.slug}/`}
+  og={{ title, description: role.description, type: 'website' }}
+>
+<style is:global>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    color-scheme: light only;
+    --paper: #FFFFFF;
+    --ink: #000000;
+    --muted: #6B6B6B;
+    --rule: #E8E8E8;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  body {
+    font-family: var(--serif);
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.65;
+    font-size: 17px;
+  }
+  .wrap { max-width: 40rem; margin: 0 auto; padding: 0 1.25rem; }
+
+  nav {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 1.8rem 0;
+  }
+  .wordmark {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .back {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .back:hover { color: var(--ink); }
+
+  header { padding: 3.5rem 0 2.5rem; }
+  header .meta {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.6rem;
+  }
+  header h1 { font-size: 1.8rem; font-weight: 400; line-height: 1.35; }
+
+  .application {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0 1rem;
+  }
+  .application iframe { display: block; width: 100%; border: 0; }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0 3rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+</style>
+<div class="wrap">
+  <SiteNav>
+    <a class="back" href="/join/">&larr; All roles</a>
+  </SiteNav>
+
+  <header>
+    <p class="meta">{role.tags.join(' · ')}</p>
+    <h1>{role.title}</h1>
+  </header>
+
+  <section class="application">
+    <iframe data-tally-src={formSrc} loading="lazy" width="100%" height="1400" title={role.formTitle}></iframe>
+  </section>
+
+  <SiteFooter />
+</div>
+<script is:inline>var d=document,w="https://tally.so/widgets/embed.js",v=function(){"undefined"!=typeof Tally?Tally.loadEmbeds():d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach((function(e){e.src=e.dataset.tallySrc}))};if("undefined"!=typeof Tally)v();else if(d.querySelector('script[src="'+w+'"]')==null){var s=d.createElement("script");s.src=w,s.onload=v,s.onerror=v,d.body.appendChild(s);}</script>
+</Base>

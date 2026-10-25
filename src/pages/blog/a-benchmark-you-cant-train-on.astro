@@ -1,0 +1,183 @@
+---
+import BlogPost from '../../layouts/BlogPost.astro';
+---
+<BlogPost slug="a-benchmark-you-cant-train-on">
+<style is:global slot="head">
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    color-scheme: light only;
+    --paper: #FFFFFF;
+    --ink: #000000;
+    --muted: #6B6B6B;
+    --rule: #E8E8E8;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  body {
+    font-family: var(--serif);
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.7;
+    font-size: 17px;
+  }
+  .wrap { max-width: 38rem; margin: 0 auto; padding: 0 1.25rem; }
+  nav {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 1.8rem 0;
+  }
+  .wordmark {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .back {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .back:hover { color: var(--ink); }
+  article { padding: 3rem 0 4rem; }
+  @media (max-width: 560px) { article { padding: 2rem 0 3rem; } }
+  .meta {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  article h1 {
+    font-size: clamp(1.45rem, 5vw, 1.9rem);
+    font-weight: 400;
+    line-height: 1.35;
+    text-wrap: balance;
+    margin-bottom: 1.8rem;
+  }
+  article p { margin-bottom: 1.2rem; }
+  article p:first-of-type { font-size: 1.08rem; color: var(--muted); }
+  figure { margin: 2.4rem 0; position: relative; }
+  figure canvas { width: 100%; height: 260px; display: block; }
+  figcaption {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-top: 0.6rem;
+  }
+  .readout {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    color: var(--ink);
+    background: var(--paper);
+    padding: 0 0.2rem;
+    pointer-events: none;
+    font-variant-numeric: tabular-nums;
+  }
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .stats {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.4rem 0 1.6rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .stats td { padding: 0.35rem 0; border-bottom: 1px solid var(--rule); }
+  .stats td:last-child { text-align: right; }
+  .coda {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    line-height: 1.7;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+    border-top: 1px solid var(--rule);
+    margin-top: 2.6rem;
+    padding-top: 1.2rem;
+  }
+  .coda a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
+  .coda a:hover { border-bottom-color: var(--ink); }
+  .coda a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0 3rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+
+  article h2 { font-size: 1.2rem; font-weight: 400; margin: 2.4rem 0 1rem; }
+  article p a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
+  article p a:hover { border-bottom-color: var(--ink); }
+  article p a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+</style>
+  <article>
+    <div class="meta">October 2026 &middot; Research notes</div>
+    <h1>A benchmark you can't train on</h1>
+
+    <p>Every benchmark leaks eventually. Questions end up in training data, people tune against the test set, and a high score stops meaning what it did. Outcomes that have not happened yet cannot leak. So we built a benchmark that only scores models on the future: every entry is frozen and hashed before a round opens, and graded on what actually happens afterwards. The first sealed round freezes on 31 October.</p>
+
+    <p>It is called <a href="https://github.com/physicalreasoning/forward">forward</a>, and the dry runs on past data already say two clear things. ECMWF's learned weather model loses to its physics model as it comes out of the box, and beats it once both get the same simple calibration. And two families of released time-series foundation models cannot beat the most boring forecast there is: copy the last price.</p>
+
+    <h2>Six columns, no exceptions</h2>
+
+    <p>A single headline number hides most of what matters, so every entry reports the same six things: a proper score (log score and ranked probability score) with honest intervals; calibration; skill against copying the last value and against climatology; skill against the prediction market that prices the same outcome; paper profit after fees and slippage; and how much of any gain one calendar month explains.</p>
+
+    <p>Two of these come straight from our own mistakes. We once trained self-supervised models on market data that learned to copy their input, while every standard diagnostic said they were healthy (<a href="/blog/we-tried-to-break-our-own-diagnostic/">write-up</a>). So beating the copy is mandatory. And in our <a href="/blog/the-weather-market-learned-to-read-the-forecast/">weather market work</a>, a better score repeatedly failed to turn into money once the spread and fees were paid. So the market, priced at its bids, and the profit column are mandatory too.</p>
+
+    <h2>The learned model needs calibrating</h2>
+
+    <p>The first task is the official high temperature tomorrow at the 19 weather stations that settle Kalshi's temperature markets, forecast at 20:00 UTC the day before. Each entry is a probability for every whole degree. The inputs are five weather models served free by Open-Meteo: ECMWF's learned model AIFS and its physics model IFS, NOAA's GFS, DWD's ICON and NOAA's blended NBM. Each is entered twice, once raw and once with a standard correction, EMOS: a linear fix for bias and a spread fitted per station on past data. The dry run covers 1 July to 9 October 2026: 1,917 station-days.</p>
+
+    <figure>
+      <svg viewBox="0 0 640 418" role="img" aria-label="Log score gain over copying yesterday&#x27;s high" style="width:100%;height:auto;display:block" font-family='ui-monospace, "SF Mono", Menlo, Consolas, monospace' font-size="12"><line x1="269.8" x2="269.8" y1="22" y2="372" stroke="#E8E8E8"/><text x="269.8" y="390" text-anchor="middle" fill="#6B6B6B">-0.25</text><line x1="346.6" x2="346.6" y1="22" y2="372" stroke="#E8E8E8"/><text x="346.6" y="390" text-anchor="middle" fill="#6B6B6B">0</text><line x1="423.5" x2="423.5" y1="22" y2="372" stroke="#E8E8E8"/><text x="423.5" y="390" text-anchor="middle" fill="#6B6B6B">+0.25</text><line x1="500.3" x2="500.3" y1="22" y2="372" stroke="#E8E8E8"/><text x="500.3" y="390" text-anchor="middle" fill="#6B6B6B">+0.50</text><line x1="577.1" x2="577.1" y1="22" y2="372" stroke="#E8E8E8"/><text x="577.1" y="390" text-anchor="middle" fill="#6B6B6B">+0.75</text><line x1="346.6" x2="346.6" y1="22" y2="372" stroke="#9A9A9A"/><text x="616" y="416" text-anchor="end" fill="#6B6B6B">log score minus copy yesterday</text><text x="236" y="48.0" text-anchor="end" fill="#6B6B6B">blend of five, calibrated</text><line x1="562.5" x2="596.4" y1="44.0" y2="44.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="579.5" cy="44.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="236" y="76.0" text-anchor="end" fill="#000" font-weight="600">AIFS (learned), calibrated</text><line x1="521.0" x2="554.6" y1="72.0" y2="72.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="538.0" cy="72.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="236" y="104.0" text-anchor="end" fill="#6B6B6B">ICON, calibrated</text><line x1="487.5" x2="527.3" y1="100.0" y2="100.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="507.7" cy="100.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="236" y="132.0" text-anchor="end" fill="#6B6B6B">NBM, calibrated</text><line x1="487.8" x2="524.0" y1="128.0" y2="128.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="506.1" cy="128.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="236" y="160.0" text-anchor="end" fill="#000" font-weight="600">IFS (physics), calibrated</text><line x1="480.3" x2="512.6" y1="156.0" y2="156.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="497.0" cy="156.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="236" y="188.0" text-anchor="end" fill="#6B6B6B">ICON, raw</text><line x1="461.5" x2="493.6" y1="184.0" y2="184.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="477.9" cy="184.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="236" y="216.0" text-anchor="end" fill="#6B6B6B">GFS, calibrated</text><line x1="452.4" x2="491.7" y1="212.0" y2="212.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="472.7" cy="212.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="236" y="244.0" text-anchor="end" fill="#6B6B6B">NBM, raw</text><line x1="454.6" x2="482.6" y1="240.0" y2="240.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="468.9" cy="240.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="236" y="272.0" text-anchor="end" fill="#000" font-weight="600">IFS (physics), raw</text><line x1="415.0" x2="444.8" y1="268.0" y2="268.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="430.0" cy="268.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="236" y="300.0" text-anchor="end" fill="#6B6B6B">GFS, raw</text><line x1="392.3" x2="431.3" y1="296.0" y2="296.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="411.9" cy="296.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="236" y="328.0" text-anchor="end" fill="#000" font-weight="600">AIFS (learned), raw</text><line x1="394.8" x2="427.8" y1="324.0" y2="324.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="411.3" cy="324.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="236" y="356.0" text-anchor="end" fill="#6B6B6B">climatology</text><line x1="269.6" x2="295.4" y1="352.0" y2="352.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="282.6" cy="352.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/></svg>
+      <figcaption>fig. 1: log score gain over copying yesterday's high, per station-day, with 95% intervals that resample whole days. filled dots: the interval excludes zero</figcaption>
+      <table class="sr"><tr><th>entry</th><th>gain</th><th>low</th><th>high</th></tr><tr><td>blend of five, calibrated</td><td>+0.758</td><td>+0.702</td><td>+0.813</td></tr><tr><td>AIFS (learned), calibrated</td><td>+0.623</td><td>+0.567</td><td>+0.677</td></tr><tr><td>ICON, calibrated</td><td>+0.524</td><td>+0.458</td><td>+0.588</td></tr><tr><td>NBM, calibrated</td><td>+0.519</td><td>+0.459</td><td>+0.577</td></tr><tr><td>IFS (physics), calibrated</td><td>+0.489</td><td>+0.435</td><td>+0.540</td></tr><tr><td>ICON, raw</td><td>+0.427</td><td>+0.374</td><td>+0.478</td></tr><tr><td>GFS, calibrated</td><td>+0.410</td><td>+0.344</td><td>+0.472</td></tr><tr><td>NBM, raw</td><td>+0.398</td><td>+0.351</td><td>+0.443</td></tr><tr><td>IFS (physics), raw</td><td>+0.271</td><td>+0.222</td><td>+0.319</td></tr><tr><td>GFS, raw</td><td>+0.212</td><td>+0.149</td><td>+0.276</td></tr><tr><td>AIFS (learned), raw</td><td>+0.210</td><td>+0.157</td><td>+0.264</td></tr><tr><td>climatology</td><td>-0.208</td><td>-0.251</td><td>-0.167</td></tr></table>
+    </figure>
+
+    <p>Every model beats copying yesterday, which is reassuring and not interesting. What is interesting is the order. Raw, AIFS is slightly worse than IFS (&minus;0.061, interval &minus;0.092 to &minus;0.029). Calibrated, it is clearly better (+0.133, interval +0.089 to +0.178), and the best single model. The reason is simple: over these days AIFS runs about 2.1&deg;F cold on average, while IFS is nearly unbiased. Take out each station's bias and AIFS's remaining error is 2.3&deg;F against IFS's 2.8&deg;F (root mean square). The ranking of the two models flips on a step most comparisons leave out.</p>
+
+    <p>The market is another matter. A blend of all five calibrated models is the best entry, and on the same ladders it still loses to the Kalshi market priced at its bids (&minus;0.113, interval &minus;0.151 to &minus;0.075). Trading on it would have made &minus;$0.021 (interval &minus;$0.061 to +$0.019) per ladder after fees and a cent of slippage, an interval that includes zero. Free forecasts are already in the price.</p>
+
+    <h2>Foundation models do not beat copying</h2>
+
+    <p>The second task is where a price closes. Kalshi lists daily ladders on the S&amp;P 500, the Nasdaq-100, two currency pairs, oil, gold, silver, copper and natural gas. Each entry sees the last 512 hourly prices of the underlying and gives a probability for every bucket, 24 or 6 hours before the close (903 and 1,706 past ladders). The baseline copies the last price: centre on it, with the spread of past moves over the same hours. Against it we entered Chronos-Bolt (Amazon) and TimesFM 2.5 (Google), used exactly as released.</p>
+
+    <figure>
+      <svg viewBox="0 0 640 474" role="img" aria-label="Log score gain over copying the last price" style="width:100%;height:auto;display:block" font-family='ui-monospace, "SF Mono", Menlo, Consolas, monospace' font-size="12"><line x1="314.6" x2="314.6" y1="22" y2="428" stroke="#E8E8E8"/><text x="314.6" y="446" text-anchor="middle" fill="#6B6B6B">-0.10</text><line x1="426.8" x2="426.8" y1="22" y2="428" stroke="#E8E8E8"/><text x="426.8" y="446" text-anchor="middle" fill="#6B6B6B">-0.05</text><line x1="538.9" x2="538.9" y1="22" y2="428" stroke="#E8E8E8"/><text x="538.9" y="446" text-anchor="middle" fill="#6B6B6B">0</text><line x1="538.9" x2="538.9" y1="22" y2="428" stroke="#9A9A9A"/><text x="616" y="472" text-anchor="end" fill="#6B6B6B">log score minus copy the last price</text><text x="0" y="48.0" fill="#000" font-weight="600">24 h before close</text><text x="236" y="76.0" text-anchor="end" fill="#6B6B6B">Chronos-Bolt small</text><line x1="314.2" x2="560.5" y1="72.0" y2="72.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="436.3" cy="72.0" r="4.5" fill="#fff" stroke="#000" stroke-width="1.5"/><text x="236" y="104.0" text-anchor="end" fill="#6B6B6B">Chronos-Bolt small, median</text><line x1="375.9" x2="512.0" y1="100.0" y2="100.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="446.3" cy="100.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="236" y="132.0" text-anchor="end" fill="#6B6B6B">Chronos-Bolt base</text><line x1="269.6" x2="493.8" y1="128.0" y2="128.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="378.4" cy="128.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="236" y="160.0" text-anchor="end" fill="#6B6B6B">Chronos-Bolt base, median</text><line x1="292.8" x2="461.5" y1="156.0" y2="156.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="379.2" cy="156.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="236" y="188.0" text-anchor="end" fill="#6B6B6B">TimesFM 2.5</text><line x1="307.4" x2="514.7" y1="184.0" y2="184.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="405.7" cy="184.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="236" y="216.0" text-anchor="end" fill="#6B6B6B">TimesFM 2.5, median</text><line x1="378.1" x2="476.8" y1="212.0" y2="212.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="426.9" cy="212.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="0" y="244.0" fill="#000" font-weight="600">6 h before close</text><text x="236" y="272.0" text-anchor="end" fill="#6B6B6B">Chronos-Bolt small</text><line x1="384.4" x2="560.7" y1="268.0" y2="268.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="475.4" cy="268.0" r="4.5" fill="#fff" stroke="#000" stroke-width="1.5"/><text x="236" y="300.0" text-anchor="end" fill="#6B6B6B">Chronos-Bolt small, median</text><line x1="402.8" x2="486.6" y1="296.0" y2="296.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="445.0" cy="296.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="236" y="328.0" text-anchor="end" fill="#6B6B6B">Chronos-Bolt base</text><line x1="413.9" x2="578.6" y1="324.0" y2="324.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="495.1" cy="324.0" r="4.5" fill="#fff" stroke="#000" stroke-width="1.5"/><text x="236" y="356.0" text-anchor="end" fill="#6B6B6B">Chronos-Bolt base, median</text><line x1="373.6" x2="466.7" y1="352.0" y2="352.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="420.5" cy="352.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/><text x="236" y="384.0" text-anchor="end" fill="#6B6B6B">TimesFM 2.5</text><line x1="398.8" x2="596.4" y1="380.0" y2="380.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="501.6" cy="380.0" r="4.5" fill="#fff" stroke="#000" stroke-width="1.5"/><text x="236" y="412.0" text-anchor="end" fill="#6B6B6B">TimesFM 2.5, median</text><line x1="421.1" x2="494.9" y1="408.0" y2="408.0" stroke="#000" stroke-width="2" stroke-linecap="round"/><circle cx="460.4" cy="408.0" r="4.5" fill="#000" stroke="#000" stroke-width="1.5"/></svg>
+      <figcaption>fig. 2: log score gain over copying the last price, per ladder. "median": the model's median with the copy baseline's spread, which isolates whether it knows where the price goes</figcaption>
+      <table class="sr"><tr><th>entry</th><th>gain</th><th>low</th><th>high</th></tr><tr><td>Chronos-Bolt small</td><td>-0.046</td><td>-0.100</td><td>+0.010</td></tr><tr><td>Chronos-Bolt small, median</td><td>-0.041</td><td>-0.073</td><td>-0.012</td></tr><tr><td>Chronos-Bolt base</td><td>-0.072</td><td>-0.120</td><td>-0.020</td></tr><tr><td>Chronos-Bolt base, median</td><td>-0.071</td><td>-0.110</td><td>-0.035</td></tr><tr><td>TimesFM 2.5</td><td>-0.059</td><td>-0.103</td><td>-0.011</td></tr><tr><td>TimesFM 2.5, median</td><td>-0.050</td><td>-0.072</td><td>-0.028</td></tr><tr><td>Chronos-Bolt small</td><td>-0.028</td><td>-0.069</td><td>+0.010</td></tr><tr><td>Chronos-Bolt small, median</td><td>-0.042</td><td>-0.061</td><td>-0.023</td></tr><tr><td>Chronos-Bolt base</td><td>-0.020</td><td>-0.056</td><td>+0.018</td></tr><tr><td>Chronos-Bolt base, median</td><td>-0.053</td><td>-0.074</td><td>-0.032</td></tr><tr><td>TimesFM 2.5</td><td>-0.017</td><td>-0.062</td><td>+0.026</td></tr><tr><td>TimesFM 2.5, median</td><td>-0.035</td><td>-0.053</td><td>-0.020</td></tr></table>
+    </figure>
+
+    <p>None of them is above zero. Their predicted moves point the right way about half the time (Chronos-Bolt small 49%, Chronos-Bolt base 50%, TimesFM 2.5 49%), and when we keep only their direction, every one of them gets significantly worse. Whatever these models learned about time series, on prices close to a random walk what they add to copying is noise. Our own models failed the other way: they learned to copy and still looked healthy. These models move away from the copy and score worse for it. Either way, the copy column is what catches it.</p>
+
+    <h2>What would an action have done?</h2>
+
+    <p>A world model should also answer counterfactuals: what would have happened if we had acted. That is hard to test, because you usually have to perform the action. Markets are an exception. We record Kalshi's order books ourselves, and a matching engine is deterministic, so replaying the record shows what a limit order we never placed would have done: whether it filled, and where the price went next. The third task scores models on exactly that. One day of recordings is a pipeline check, not a result, but it already turned up a design decision: more than half of the hypothetical fills come from orders crossing the book rather than from trades, so a sealed version has to say in advance which counts.</p>
+
+    <h2>What is sealed</h2>
+
+    <p>Round 1 freezes on 31 October and scores 1 November to 26 December. Its five tests are written down: whether calibrated AIFS beats calibrated IFS, whether every calibrated model beats copying, whether the best blend beats the market at its bids, whether trading it makes money, and whether isotherm, our own model of these markets, beats the market. isotherm is entered as it runs, its answers captured live from its public API at every read. Round 2 freezes on 3 January and adds the price task. Every result gets published, whichever way it goes.</p>
+
+    <p class="coda">Code, specs, methods and every result file: <a href="https://github.com/physicalreasoning/forward">physicalreasoning/forward</a>. Results page: <a href="/forward/">physicalreasoning.ai/forward</a>. Weather data by <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0), from ECMWF (&copy; ECMWF, CC BY 4.0), DWD (CC BY 4.0) and NOAA. Truth from NWS climate reports via the Iowa Environmental Mesonet. Market data is used for scoring and not republished.</p>
+
+    <p class="coda">References. T. Gneiting, A. E. Raftery, A. H. Westveld, T. Goldman, Calibrated probabilistic forecasting using ensemble model output statistics and minimum CRPS estimation, Monthly Weather Review, 2005. S. Lang et al., AIFS: ECMWF's data-driven forecasting system, 2024. A. F. Ansari et al., Chronos: learning the language of time series, TMLR, 2024. A. Das et al., A decoder-only foundation model for time-series forecasting, ICML, 2024. R. Cont, S. Stoikov, R. Talreja, A stochastic model for order book dynamics, Operations Research, 2010.</p>
+  </article>
+</BlogPost>

@@ -1,0 +1,24 @@
+---
+// isotherm results dashboard. It is generated in physicalreasoning/isotherm by scripts/dashboard.py
+// and imported with `npm run import:isotherm -- <path>`, which rewrites everything in src/isotherm/;
+// change the dashboard there rather than editing those files by hand. It keeps its own document
+// shell rather than the Base layout: it has its own design system, with dark mode.
+import headTags from '../../isotherm/head.html?raw';
+import markup from '../../isotherm/body.html?raw';
+import chartCode from '../../isotherm/dashboard.js?raw';
+import data from '../../isotherm/data.json';
+import '../../isotherm/dashboard.css';
+
+// The chart code is a classic script that reads the results from the global `D`.
+const dashboardScript = `const D = ${JSON.stringify(data).replace(/</g, '\\u003c')};\n${chartCode}`;
+---
+<!doctype html>
+<html lang="en">
+<head>
+<Fragment set:html={headTags} />
+</head>
+<body>
+<Fragment set:html={markup} />
+<script is:inline set:html={dashboardScript} />
+</body>
+</html>
