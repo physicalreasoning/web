@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="color-scheme" content="light only">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="We attacked our own martingale-collapse detector and it held. Then everything else came apart: more training made the representation worse, and the metric we had ranked every model by was mostly measuring input reconstruction.">
+<meta name="description" content="Our martingale-collapse detector survived a targeted attack. More training made the representation worse, and the metric we ranked every model by mostly measured input reconstruction.">
 <meta property="og:title" content="We tried to break our own diagnostic">
-<meta property="og:description" content="We attacked our own martingale-collapse detector and it held. Then everything else came apart: more training made the representation worse, and the metric we had ranked every model by was mostly measuring input reconstruction.">
+<meta property="og:description" content="Our martingale-collapse detector survived a targeted attack. More training made the representation worse, and the metric we ranked every model by mostly measured input reconstruction.">
 <meta property="og:url" content="https://physicalreasoning.ai/blog/we-tried-to-break-our-own-diagnostic/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://physicalreasoning.ai/og.png">
@@ -105,7 +105,7 @@
     color: var(--muted);
   }
 </style>
-<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "We tried to break our own diagnostic", "description": "We attacked our own martingale-collapse detector and it held. Then everything else came apart: more training made the representation worse, and the metric we had ranked every model by was mostly measuring input reconstruction.", "url": "https://physicalreasoning.ai/blog/we-tried-to-break-our-own-diagnostic/", "datePublished": "2026-08-10", "author": {"@type": "Organization", "name": "Physical Reasoning"}, "publisher": {"@type": "Organization", "name": "Physical Reasoning", "logo": {"@type": "ImageObject", "url": "https://physicalreasoning.ai/og.png"}}, "mainEntityOfPage": "https://physicalreasoning.ai/blog/we-tried-to-break-our-own-diagnostic/", "image": "https://physicalreasoning.ai/og.png"}]</script>
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "We tried to break our own diagnostic", "description": "Our martingale-collapse detector survived a targeted attack. More training made the representation worse, and the metric we ranked every model by mostly measured input reconstruction.", "url": "https://physicalreasoning.ai/blog/we-tried-to-break-our-own-diagnostic/", "datePublished": "2026-08-10", "author": {"@type": "Organization", "name": "Physical Reasoning"}, "publisher": {"@type": "Organization", "name": "Physical Reasoning", "logo": {"@type": "ImageObject", "url": "https://physicalreasoning.ai/og.png"}}, "mainEntityOfPage": "https://physicalreasoning.ai/blog/we-tried-to-break-our-own-diagnostic/", "image": "https://physicalreasoning.ai/og.png"}]</script>
 </head>
 <body>
 <div class="wrap">
@@ -118,46 +118,46 @@
     <div class="meta">August 2026 &middot; Research notes</div>
     <h1>We tried to break our own diagnostic</h1>
 
-    <p>An instrument you have never attacked is not an instrument, it is an assumption. So we spent a week building the strongest attack we could against our own martingale-collapse detector. It held. Then almost everything else we believed came apart.</p>
+    <p>We spent a week building the strongest attack we could against our own martingale-collapse detector, and the detector held. Follow-up checks showed that more training made our representations worse, that two regularisers had never been switched on, and that the metric we ranked every model by mostly measured input reconstruction.</p>
 
-    <p>The detector exists because prediction-market prices are close to a martingale, so a model can drive its objective down by learning something very near the identity map. That map has full rank and full per-dimension variance, so it passes every standard collapse check while encoding nothing. Our copy oracle scores the model against an explicit copy of the nearest visible embedding, and on real Kalshi strike ladders it reported alignment of 0.964. Copying, everywhere.</p>
+    <p>The detector exists because prediction-market prices are close to a martingale, so a model can drive its objective down by learning something very near the identity map. That map has full rank and full per-dimension variance, so it passes every standard collapse check while learning nothing beyond its input. Our copy oracle scores the model against an explicit copy of the nearest visible embedding, and on real Kalshi strike ladders it reported alignment of 0.964, which is close to pure copying.</p>
 
-    <p>Then we found a reason to doubt our own number. The target encoder ran unmasked attention across the whole window, so under temporal masking the target at a <em>visible</em> patch was computed with attention over the <em>masked</em> ones. The oracle's reference was contaminated with the future. If that was what made copying look easy, the detector was measuring our architecture rather than the market, and a month of conclusions would have to go. The test is clean: make the time axis of the target tower causal, change nothing else, run the two-by-two over which towers are causal, four seeds per cell.</p>
+    <p>We then found a reason to doubt that number. The target encoder ran unmasked attention across the whole window, so under temporal masking the target at a <em>visible</em> patch was computed with attention over the <em>masked</em> ones, and the oracle's reference was contaminated with the future. If that was what made copying look easy, the detector was measuring our architecture and not the market, and a month of conclusions would have to go. To test it, we made the time axis of the target tower causal, changed nothing else, and ran the two-by-two over which towers are causal, with four seeds per cell.</p>
 
     <figure>
       <canvas id="fig1"></canvas>
       <figcaption>fig. 1: copy alignment and probe R&sup2; across four causality configurations, four seeds each, error bars at one standard deviation</figcaption>
     </figure>
 
-    <p>The contamination was real. Reading identical weights out both ways, the two target towers genuinely differ, by 12.7 percent in relative L2 at the earliest patch. And removing it changed nothing that mattered: copy alignment moved from 0.9641 to 0.9616, probe R&sup2; from +0.3919 to +0.3924, a Welch t of 0.09. We built the attack, confirmed the flaw it was aimed at, and the detector did not move. The copying is the market.</p>
+    <p>The contamination was real. Reading identical weights out both ways, the two target towers differ by 12.7 percent in relative L2 at the earliest patch. Removing it made almost no difference: copy alignment moved from 0.9641 to 0.9616 and probe R&sup2; from +0.3919 to +0.3924, a Welch t of 0.09. So the copying comes from the market data and not from the leak.</p>
 
-    <p>So we went looking for what else we had never checked. Every conclusion rested on a six-hundred-step budget nobody had pushed past, so we pushed: three seeds, 19,200 steps, probed at six checkpoints against an untrained encoder of the same architecture.</p>
+    <p>The attack had failed, so we checked what else we had never tested. Every conclusion rested on a budget of 600 training steps. We ran three seeds for 19,200 steps and probed at six checkpoints, against an untrained encoder of the same architecture.</p>
 
     <figure>
       <canvas id="fig2"></canvas>
       <figcaption>fig. 2: the MLP probe against an untrained encoder of the same architecture, and effective rank, across one 19,200-step schedule. three seeds</figcaption>
     </figure>
 
-    <p>Thirty-two times the compute bought nothing. The ridge probe is flat, +0.4006 to +0.3965. The nonlinear probe peaks at the very first checkpoint and falls 0.091 from there, ending 23 pooled standard deviations <em>below</em> the untrained floor. The part we find hardest to unsee is the second line: effective rank nearly triples over the same run, 36 to 94, while utility falls. Rank is the standard check for representational collapse, and here it is not merely blind to the failure, it points confidently the wrong way.</p>
+    <p>Thirty-two times the compute gained nothing. The ridge probe stays flat, +0.4006 to +0.3965. The nonlinear probe peaks at the first checkpoint and falls 0.091 from there, ending 23 pooled standard deviations <em>below</em> the untrained encoder. Over the same run effective rank nearly triples, from 36 to 94. Rank is the standard check for representational collapse, and here it rises while the probe gets worse.</p>
 
-    <p>Nor is the copy oracle any better as a guide. Both anti-collapse regularisers this programme had written off turned out never to have been switched on: each was computed on a detached target, in two separate repositories, contributing exactly zero gradient to every run either of them ever did. Put them back in and they work, and copy alignment falls from 0.965 to 0.776. Nothing improves; at the strongest settings the MLP probe gets worse. Across twenty-seven runs the diagnostic spans a range of 0.198 while probe R&sup2; spans 0.035, and the correlation between the two is <em>positive</em>. We can set the number almost anywhere we like with one hyperparameter, and nothing downstream follows.</p>
+    <p>The copy oracle is no better as a guide to usefulness. Both anti-collapse regularisers this programme had written off turned out never to have been switched on: each was computed on a detached target, in two separate repositories, and contributed zero gradient to every run. With that fixed they work, and copy alignment falls from 0.965 to 0.776, but nothing else improves, and at the strongest settings the MLP probe gets worse. Across twenty-seven runs the diagnostic spans a range of 0.198 while probe R&sup2; spans 0.035, and the correlation between the two is <em>positive</em>. One hyperparameter can set the diagnostic almost anywhere, with little effect downstream.</p>
 
-    <p>That left the comparison the whole programme was built on, and it did not survive either. We had been ranking every model by a mean over four probe targets. One of them is documented in our own data code as a derivable function of the input, a sanity check whose low values mean the encoder is broken rather than that the result is interesting, and nearly the entire gap between our models and raw features lives there: the best raw arm scores +0.9407 on it against the best learned readout's +0.7552. A compressed embedding cannot beat the raw input at reproducing a function of that input, so it was never a comparison anyone could win.</p>
+    <p>Next we checked the comparison the whole programme was built on. We had been ranking every model by a mean over four probe targets. One of them is documented in our own data code as a derivable function of the input, a sanity check whose low values mean the encoder is broken. Nearly the entire gap between our models and raw features comes from that target: the best raw arm scores +0.9407 on it against the best learned readout's +0.7552. A compressed embedding cannot beat the raw input at reproducing a function of that input, so our models could not have won that comparison.</p>
 
-    <p>On the one target that is genuinely about the future, every arm we have ever run lands between &minus;0.004 and +0.051. Raw features, untrained encoders and every trained model, indistinguishable from each other and from zero. The number the programme was optimising was largely measuring how well a model reconstructs its own input, and the number anyone would actually trade on was flat the whole time.</p>
+    <p>On the one target that is about the future, every arm we have ever run lands between &minus;0.004 and +0.051. Raw features, untrained encoders and every trained model are indistinguishable from each other and from zero. The metric the programme was optimising largely measured how well a model reconstructs its own input, and the number a trader would use was flat the whole time.</p>
 
-    <p>None of which means the objective is broken. On a simulator where we control the hidden state and know it is recoverable, the same objective beats raw features comfortably, and beats them by <em>more</em> as the observations get noisier.</p>
+    <p>The objective itself is not broken. On a simulator where we control the hidden state and know it is recoverable, the same objective beats raw features, and by <em>more</em> as the observations get noisier.</p>
 
     <figure>
       <canvas id="fig3"></canvas>
       <figcaption>fig. 3: on the simulator, learned representation versus raw features against observation-noise multiplier. the gap widens as the data degrades</figcaption>
     </figure>
 
-    <p>Across a thirty-two-fold range of quote noise the advantage never crosses zero and more than doubles, from +0.0690 to +0.1502. Raw features fall apart, +0.8239 to +0.6734, while the learned representation barely moves, +0.8928 to +0.8237. Where there is hidden state to recover, this class of model recovers it and keeps recovering it long after the raw cross-section has stopped being usable. Our target set simply had none in it.</p>
+    <p>Across a thirty-two-fold range of quote noise the advantage never crosses zero and more than doubles, from +0.0690 to +0.1502. Raw features fall from +0.8239 to +0.6734, while the learned representation falls only from +0.8928 to +0.8237. Where there is hidden state to recover, this class of model recovers it, even after the raw cross-section has degraded. Our market targets appear to contain none.</p>
 
-    <p>We are stopping here rather than reaching for a bigger model, because the experiments that would have justified one came back negative. What would restart this is not more parameters or more steps, it is a target with something in it: realised volatility over a future window, or the settlement of a different correlated market.</p>
+    <p>We are stopping here and not trying a bigger model, because the experiments that would have justified one came back negative. We would restart this work with a different target: realised volatility over a future window, or the settlement of a different correlated market.</p>
 
-    <p>None of this came from a new idea. It came from varying a readout we had never varied, matching control widths we had never matched, decomposing a mean we had quoted for a month, and checking whether a regulariser we had dismissed was ever running. Attack your instruments before you trust them. Then check what they predict, because an instrument can be perfectly sound and still measure nothing you care about.</p>
+    <p>None of this took a new idea. We varied a readout we had never varied, matched control widths we had never matched, decomposed a mean we had quoted for a month, and checked whether the regularisers we had dismissed were ever running. We should have done all four before ranking anything. The detector does what it was built to do and detects copying, but it does not tell you whether a representation is useful.</p>
 
     <p class="coda">Every number here is reproducible from
       <a href="https://github.com/physicalreasoning/causal-jepa">physicalreasoning/causal-jepa</a>,
