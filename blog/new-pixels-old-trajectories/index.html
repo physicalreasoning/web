@@ -187,13 +187,13 @@
     <div class="meta">October 2026 &middot; Research notes</div>
     <h1>New pixels, old trajectories</h1>
 
-    <p>Change the colours, move the camera, replace the background, compress the video again. The pixels are new. The event may not be. If a model saw the same collision during training, how much should a correct prediction on the new rendering count as generalisation?</p>
+    <p>Change the colours, move the camera, replace the background, compress the video again: the pixels are new, but the event may not be. If a model saw the same collision during training, how much should a correct prediction on the new rendering count as generalisation?</p>
 
     <p>We built a collision simulator that can render the same recorded motion in different ways, and an audit that measures how reusing an event changes a predictor's score. A trajectory is the sequence of physical states through time. We tested the audit with a predictor that stores trajectories, compared simple predictors on public collision data, and trained a first pixel-conditioned ConvLSTM.</p>
 
-    <p>Exact file identity can be tested by hashing. Semantic similarity alone does not establish reuse of the same physical event. Video retrieval work already distinguishes transformed duplicates, complementary views and related incidents, while memorisation work on video diffusion separates repeated content from repeated motion. Known simulator lineage gives us a more specific relationship: we can hold the physical event fixed, change its pixels, and measure the effect of that exposure on evaluation.</p>
+    <p>Hashing can test exact file identity, and semantic similarity alone does not establish reuse of the same physical event. Video retrieval work already distinguishes transformed duplicates, complementary views and related incidents, while memorisation work on video diffusion separates repeated content from repeated motion. Known simulator lineage gives us a more specific relationship: we can hold the physical event fixed, change its pixels, and measure the effect of that exposure on evaluation.</p>
 
-    <h2>Four relationships, not one duplicate flag</h2>
+    <h2>Four relationships to a source event</h2>
 
     <p>We record each video's relationship to a source event. An exact duplicate repeats its pixels. A rerender changes appearance but preserves every stored position and velocity. A nearby trajectory is generated separately and meets a similarity rule fixed in advance. An independent sample is drawn afresh without selecting for similarity. We call the renderings of one trajectory a source family.</p>
 
@@ -215,7 +215,7 @@
 
     <p>A positive gap means that the source-trained branch has a larger relative advantage over the replacement-trained branch on source events than on independent events. This can come from source improvement, independent-event degradation or both, so we report both models' absolute errors and their changes from the starting checkpoint.</p>
 
-    <h2>First, test a predictor that remembers</h2>
+    <h2>A positive control: a predictor that remembers</h2>
 
     <p>We first tested a predictor designed to remember: it stores the opening state frames of each trajectory and returns the recorded future of the closest match. It sees eight frames of object positions and predicts the next sixteen. Across sixty-four independent runs, we compared two memory banks of thirty-two trajectories each and tested them on source events and 128 freshly sampled events per run. Error is the average distance between predicted and true object centres, measured in arena widths, with each distance capped at one.</p>
 
@@ -236,7 +236,7 @@
 
     <p>Because it receives exact state positions, this predictor can retrieve a stored event perfectly. That makes it a useful check for a reversed sign, a mismatched memory bank or an incorrect aggregation. Rendering, visual matching and learned-model behaviour are separate gates.</p>
 
-    <h2>A harder baseline, and a metric that changed the answer</h2>
+    <h2>The scoring window decides which baseline wins</h2>
 
     <p>We next asked how well trajectory lookup works on collisions from another dataset. We used the public collision evaluation file from <a href="https://github.com/phyworld/phyworld">PhyWorld</a>, a study of physical-law learning in video generators. It contains 1,635 examples in three numbered groups, each with thirty-two frames of recorded object positions, initial radii and velocities, and a video.</p>
 
@@ -258,11 +258,11 @@
       <figcaption id="fig3-caption">fig. 3: nearest-trajectory error minus constant-velocity error. negative favours retrieval; positive favours constant velocity. the conclusion reverses when scoring only frames where both disks remain visible</figcaption>
     </figure>
 
-    <p>The first result was arithmetically correct and scientifically incomplete. Retrieval was much better at extrapolating stored states after objects left the image. Constant velocity was better while both objects remained visible. The choice of evaluation window changed which baseline won.</p>
+    <p>Retrieval was much better at extrapolating stored states after objects left the image, and constant velocity was better while both objects remained visible, so the choice of evaluation window decided which baseline won.</p>
 
-    <p>This is exactly why the measurement comes before the model. “Beat constant velocity” and “beat retrieval” are not one undifferentiated gate.</p>
+    <p>A claim to “beat constant velocity” or “beat retrieval” therefore has to state its evaluation window.</p>
 
-    <h2>Pixels in, future states out</h2>
+    <h2>A first pixel-conditioned model</h2>
 
     <p>We then trained a compact ConvLSTM visual-state predictor. It consumes eight RGB frames and predicts the next sixteen object-centre states. Each of three seeded runs used 512 generated training videos, 128 independently generated test videos and 300 updates. Every sampled video contains an equal-mass collision after the observation prefix and before the final four frames, with trajectories that remain inside the arena. The model has 1,085,552 parameters; all three runs together took 35.5 seconds on Apple MPS.</p>
 
@@ -280,7 +280,7 @@
 
     <p>The ConvLSTM reduced mean centre error by 39.3% relative to constant velocity and 70.0% relative to persistence. Those reference baselines use ground-truth object positions from the observed prefix; nearest-trajectory retrieval also searches ground-truth position histories. Retrieval remained slightly better, 0.02903 against 0.02965. The ConvLSTM passes the feasibility gate on this conditioned collision distribution and gives us a starting model for the exposure experiment.</p>
 
-    <h2>Next, expose the learned model</h2>
+    <h2>Next: the exposure experiment</h2>
 
     <p>Copies of one starting ConvLSTM will receive independent replacement trajectories, one rendering of each source trajectory, or nearby independently generated trajectories. An additional condition will receive exact copies of source videos. We will match successful update counts, schedules and batch positions.</p>
 
@@ -292,7 +292,7 @@
 
     <p>The controlled study begins with one-dimensional collision dynamics rendered into 2D video, where lineage and event state are exact. The same lineage design can scale to two- and three-dimensional simulations, multiple camera views, RGB-D observations or point-cloud world models by grouping every observation derived from one latent trajectory.</p>
 
-    <p>A new file is not necessarily a new example, and a new rendering is not necessarily a new event. Before treating a held-out score as evidence of a world model, we should be able to say what, exactly, was held out.</p>
+    <p>Before treating a held-out score as evidence of a world model, we should be able to say which events were actually held out.</p>
 
     <p class="coda">Code, experiment configurations, machine-readable results and the findings record: <a href="https://github.com/physicalreasoning/trajectory-lineage">physicalreasoning/trajectory-lineage</a>.</p>
 
